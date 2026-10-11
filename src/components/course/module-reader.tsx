@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Module } from "@/lib/course-data";
 import { ContentRenderer } from "./content-renderer";
+import { Quiz } from "./quiz";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   ChevronLeft, CheckCircle2, Circle, Clock, ArrowRight, RotateCcw,
-  GraduationCap, HelpCircle, Lightbulb, Sparkles,
+  GraduationCap, HelpCircle, Lightbulb, Sparkles, Lock,
 } from "lucide-react";
 import { useSession, ProgressStatus } from "@/lib/session";
+import { cn } from "@/lib/utils";
 
 type Props = {
   module: Module;
@@ -28,6 +30,7 @@ export function ModuleReader({
   const current = progress[module.id];
   const status: ProgressStatus = current?.status ?? "not_started";
   const percent = current?.percent ?? 0;
+  const [quizPassed, setQuizPassed] = useState(false);
 
   useEffect(() => {
     if (!student) return;
@@ -43,6 +46,11 @@ export function ModuleReader({
 
   async function markComplete() {
     if (!student) return;
+    // If there's a quiz, require it to be passed
+    if (module.quiz && module.quiz.length > 0 && !quizPassed) {
+      onToast("Please pass the quiz first to mark this module complete.", "error");
+      return;
+    }
     upsertProgress(module.id, { status: "completed", percent: 100, completedAt: new Date().toISOString() });
     try {
       await fetch("/api/progress", {
@@ -59,6 +67,7 @@ export function ModuleReader({
   async function resetModule() {
     if (!student) return;
     upsertProgress(module.id, { status: "not_started", percent: 0, completedAt: null });
+    setQuizPassed(false);
     try {
       await fetch(`/api/progress?studentId=${student.id}&moduleId=${module.id}`, { method: "DELETE" });
       onToast(`Module ${module.number} progress reset.`, "default");
@@ -70,7 +79,7 @@ export function ModuleReader({
   const SKIP_HEADINGS = new Set(["Key Takeaways", "Instructor Note"]);
   const filteredContent: typeof module.content = [];
   let skipMode = false;
-  for (const block of module.content) {
+    for (const block of module.content) {
     if (block.type === "heading" && SKIP_HEADINGS.has(block.text)) {
       skipMode = true;
       continue;
@@ -83,6 +92,7 @@ export function ModuleReader({
 
   const isIntroduction = module.number === 0;
   const isSupplementary = module.supplementary;
+  const hasQuiz = module.quiz && module.quiz.length > 0;
 
   return (
     <div className="mx-auto max-w-4xl px-4 pb-24 pt-6 sm:px-6">
@@ -114,6 +124,12 @@ export function ModuleReader({
               )}
               {isSupplementary && (
                 <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Supplementary</Badge>
+              )}
+              {hasQuiz && (
+                <Badge variant="outline" className="gap-1 border-sky-200 bg-sky-50 text-sky-700">
+                  <HelpCircle className="h-3 w-3" />
+                  Quiz required
+                </Badge>
               )}
             </div>
             <h1 className="text-xl font-bold leading-tight text-slate-900 sm:text-2xl">
@@ -156,6 +172,13 @@ export function ModuleReader({
         <ContentRenderer blocks={filteredContent} />
       </div>
 
+      {hasQuiz && !isIntroduction && (
+        <Quiz
+          quiz={module.quiz!}
+          onPass={() => setQuizPassed(true)}
+        />
+      )}
+
       {module.keyTakeaways.length > 0 && (
         <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50/50 p-5">
           <h3 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-700">
@@ -191,6 +214,14 @@ export function ModuleReader({
                   </p>
                 </div>
               </>
+            ) : hasQuiz && !quizPassed ? (
+              <>
+                <Lock className="h-6 w-6 text-slate-300" />
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">Pass the quiz to complete this module</p>
+                  <p className="text-xs text-slate-500">Score 70% or higher to unlock the complete button.</p>
+                </div>
+              </>
             ) : (
               <>
                 <Circle className="h-6 w-6 text-slate-300" />
@@ -209,7 +240,16 @@ export function ModuleReader({
               </Button>
             )}
             {status !== "completed" && (
-              <Button onClick={markComplete} className="bg-emerald-600 text-white hover:bg-emerald-700">
+              <Button
+                onClick={markComplete}
+                disabled={hasQuiz && !quizPassed}
+                className={cn(
+                  "text-white",
+                  hasQuiz && !quizPassed
+                    ? "bg-slate-300 cursor-not-allowed"
+                    : "bg-emerald-600 hover:bg-emerald-700"
+                )}
+              >
                 <CheckCircle2 className="mr-1.5 h-4 w-4" />
                 Mark module complete
               </Button>

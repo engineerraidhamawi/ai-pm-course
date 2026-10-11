@@ -5,6 +5,13 @@ export type ContentBlock =
   | { type: "prompt"; title: string; code: string }
   | { type: "table"; headers: string[]; rows: string[][] };
 
+export type QuizQuestion = {
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+};
+
 export type Module = {
   id: string;
   number: number;
@@ -18,8 +25,8 @@ export type Module = {
   content: ContentBlock[];
   keyTakeaways: string[];
   instructorNote: string;
+  quiz?: QuizQuestion[];
 };
-
 export const COURSE_META = {
   title: "AI-Powered Project Management",
   subtitle: "From Planning to Reporting",
