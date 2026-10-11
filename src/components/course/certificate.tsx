@@ -24,7 +24,7 @@ export function Certificate({ student, modules, completedCount, onPrint }: Props
 
   const certificateId = useMemo(() => {
     const hash = student.id.slice(-8).toUpperCase();
-    return `AIPM-${hash}-${Date.now().toString(36).toUpperCase().slice(-4)}`;
+    return `AIPM-${hash}-${Date.now().toString(36).toUpperCase().slice(-6)}`;
   }, [student.id]);
 
   if (completedCount < modules.length) return null;
@@ -41,226 +41,262 @@ export function Certificate({ student, modules, completedCount, onPrint }: Props
       {/* Certificate */}
       <div
         id="certificate-paper"
-        className="relative overflow-hidden bg-white shadow-2xl"
-        style={{ aspectRatio: "1.414 / 1", fontFamily: "Georgia, serif" }}
+        className="relative overflow-hidden bg-[#F0F4F8] shadow-2xl"
+        style={{ aspectRatio: "1.414 / 1" }}
       >
-        {/* Subtle guilloche texture overlay */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `
-              repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 3px),
-              repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 3px)
-            `,
-          }}
-        />
-
-        {/* Left gold accent stripes */}
-        <div className="absolute left-0 top-0 h-full w-2 bg-amber-500" />
-        <div className="absolute left-3 top-0 h-full w-px bg-amber-400" />
-
-        {/* Diagonal wave shape — dark navy to white */}
+        {/* Topographic watermark background */}
         <svg
-          className="absolute inset-0 h-full w-full"
+          className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.12]"
           viewBox="0 0 1000 707"
-          preserveAspectRatio="none"
+          preserveAspectRatio="xMidYMid slice"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <defs>
-            <linearGradient id="navyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#0f172a" />
-              <stop offset="100%" stopColor="#1e293b" />
-            </linearGradient>
-            <linearGradient id="goldWave" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#f59e0b" />
-              <stop offset="60%" stopColor="#d97706" />
-              <stop offset="100%" stopColor="#92400e" />
-            </linearGradient>
-          </defs>
-          {/* Navy diagonal shape */}
-          <path
-            d="M 0,0 L 1000,0 L 1000,180 Q 500,280 0,400 Z"
-            fill="url(#navyGradient)"
-          />
-          {/* Gold wave accent */}
-          <path
-            d="M 0,400 Q 500,280 1000,180 L 1000,200 Q 500,300 0,420 Z"
-            fill="url(#goldWave)"
-            opacity="0.85"
-          />
+          <g fill="none" stroke="#5D7B93" strokeWidth="0.8">
+            {/* Organic contour-like loops */}
+            <path d="M 200,350 Q 300,250 400,350 T 600,350 T 800,350" />
+            <path d="M 180,400 Q 280,300 380,400 T 580,400 T 780,400" />
+            <path d="M 220,300 Q 320,200 420,300 T 620,300 T 820,300" />
+            <path d="M 160,450 Q 260,350 360,450 T 560,450 T 760,450" />
+            <path d="M 240,250 Q 340,150 440,250 T 640,250 T 840,250" />
+            <path d="M 140,500 Q 240,400 340,500 T 540,500 T 740,500" />
+            {/* Cloud-like loops */}
+            <ellipse cx="500" cy="350" rx="350" ry="200" />
+            <ellipse cx="500" cy="350" rx="300" ry="160" />
+            <ellipse cx="500" cy="350" rx="250" ry="120" />
+            <ellipse cx="500" cy="350" rx="200" ry="80" />
+            {/* Neural network nodes */}
+            <circle cx="350" cy="280" r="4" fill="#5D7B93" />
+            <circle cx="650" cy="280" r="4" fill="#5D7B93" />
+            <circle cx="500" cy="200" r="4" fill="#5D7B93" />
+            <circle cx="400" cy="450" r="4" fill="#5D7B93" />
+            <circle cx="600" cy="450" r="4" fill="#5D7B93" />
+            <line x1="350" y1="280" x2="500" y2="200" />
+            <line x1="650" y1="280" x2="500" y2="200" />
+            <line x1="350" y1="280" x2="400" y2="450" />
+            <line x1="650" y1="280" x2="600" y2="450" />
+            <line x1="400" y1="450" x2="600" y2="450" />
+          </g>
         </svg>
 
+        {/* Outer frame — thin solid line */}
+        <div className="absolute inset-[24px] border border-[#B8CDD9]" />
+
+        {/* Corner squares — bright blue, on the outer frame */}
+        <div className="absolute left-[18px] top-[18px] h-3 w-3 bg-[#2E86DE]" />
+        <div className="absolute right-[18px] top-[18px] h-3 w-3 bg-[#2E86DE]" />
+        <div className="absolute bottom-[18px] left-[18px] h-3 w-3 bg-[#2E86DE]" />
+        <div className="absolute bottom-[18px] right-[18px] h-3 w-3 bg-[#2E86DE]" />
+
+        {/* Inner dotted border */}
+        <div
+          className="absolute inset-[44px]"
+          style={{ border: "1px dotted #A4C3D6" }}
+        />
+
         {/* Content layer */}
-        <div className="relative h-full p-10 sm:p-14">
-          {/* Header — top left in navy area */}
-          <div className="text-white">
-            <div className="mb-1 text-xs font-semibold uppercase tracking-[0.3em] text-amber-300" style={{ fontFamily: "system-ui, sans-serif" }}>
-              AI-Powered Project Management
+        <div className="relative h-full px-14 py-12 sm:px-20 sm:py-16">
+          {/* ===== HEADER (Top Left) ===== */}
+          <div className="flex items-start justify-between">
+            {/* Logo — left */}
+            <div className="flex items-center gap-3">
+              <img
+                src="/course-logo.png"
+                alt="AI logo"
+                className="h-14 w-14 rounded-lg object-cover sm:h-16 sm:w-16"
+              />
+              <div>
+                <p
+                  className="text-xl italic text-[#5D7B93] sm:text-2xl"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  Dr. Raid Hamawi
+                </p>
+                <p
+                  className="text-[8px] font-semibold uppercase tracking-[0.3em] text-[#8FAABB] sm:text-[10px]"
+                  style={{ fontFamily: "system-ui, sans-serif" }}
+                >
+                  Artificial Intelligence
+                </p>
+              </div>
             </div>
+
+            {/* Serial number — top right */}
+            <div className="text-right">
+              <p
+                className="text-[8px] uppercase tracking-[0.2em] text-[#7F8C8D] sm:text-[9px]"
+                style={{ fontFamily: "system-ui, sans-serif" }}
+              >
+                Serial No.
+              </p>
+              <p
+                className="mt-1 text-xs font-semibold text-[#2C3E50] sm:text-sm"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                {certificateId}
+              </p>
+            </div>
+          </div>
+
+          {/* ===== TITLE BLOCK (Center-Top) ===== */}
+          <div className="mt-8 text-center sm:mt-12">
             <h1
-              className="text-4xl font-bold tracking-wider text-amber-400 sm:text-5xl"
-              style={{ fontFamily: "Georgia, serif", letterSpacing: "0.1em" }}
+              className="text-4xl font-normal uppercase tracking-[0.5em] text-[#1A2B3C] sm:text-5xl"
+              style={{ fontFamily: "Georgia, serif" }}
             >
-              CERTIFICATE
+              Certificate
             </h1>
             <p
-              className="text-sm font-semibold uppercase tracking-[0.4em] text-white/90 sm:text-base"
+              className="mt-3 text-xs font-semibold uppercase tracking-[0.25em] text-[#2E86DE] sm:text-sm"
               style={{ fontFamily: "system-ui, sans-serif" }}
             >
-              of Completion
+              of Excellence in Artificial Intelligence
             </p>
-          </div>
 
-          {/* Award ribbon — left side, overlapping the wave */}
-          <div className="absolute left-8 top-[42%] -translate-y-1/2 sm:left-14">
-            <div className="relative">
-              {/* Rosette */}
-              <div className="relative grid h-20 w-20 place-items-center sm:h-24 sm:w-24">
-                {/* Sunburst rays */}
-                <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
-                  {Array.from({ length: 16 }).map((_, i) => {
-                    const angle = (i * 22.5 * Math.PI) / 180;
-                    const x1 = 50 + Math.cos(angle) * 38;
-                    const y1 = 50 + Math.sin(angle) * 38;
-                    const x2 = 50 + Math.cos(angle) * 48;
-                    const y2 = 50 + Math.sin(angle) * 48;
-                    return (
-                      <line
-                        key={i}
-                        x1={x1}
-                        y1={y1}
-                        x2={x2}
-                        y2={y2}
-                        stroke="#f59e0b"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      />
-                    );
-                  })}
-                  <circle cx="50" cy="50" r="34" fill="#fbbf24" stroke="#d97706" strokeWidth="2" />
-                  <circle cx="50" cy="50" r="30" fill="none" stroke="#fde68a" strokeWidth="1" />
-                </svg>
-                {/* Center text */}
-                <div className="relative z-10 text-center">
-                  <div className="text-[10px] italic text-amber-900 sm:text-xs" style={{ fontFamily: "Georgia, serif" }}>Best</div>
-                  <div className="text-[10px] font-bold uppercase text-amber-900 sm:text-xs" style={{ fontFamily: "Georgia, serif" }}>Award</div>
-                  <div className="text-[8px] text-amber-800 sm:text-[10px]" style={{ fontFamily: "system-ui, sans-serif" }}>2026</div>
-                </div>
-              </div>
-              {/* Ribbons hanging below */}
-              <svg viewBox="0 0 80 60" className="mx-auto -mt-2 h-12 w-16 sm:h-16 sm:w-20">
-                <path d="M 20,0 L 30,50 L 40,5 L 50,50 L 60,0 Z" fill="#d97706" />
-                <path d="M 25,0 L 35,45 L 40,5 Z" fill="#f59e0b" opacity="0.7" />
-                <path d="M 55,0 L 45,45 L 40,5 Z" fill="#f59e0b" opacity="0.7" />
-              </svg>
+            {/* Diamond divider */}
+            <div className="mx-auto mt-5 flex items-center justify-center gap-2">
+              <div className="h-px w-24 bg-[#B8CDD9] sm:w-32" />
+              <div className="h-2 w-2 rotate-45 border border-[#B8CDD9]" />
+              <div className="h-px w-24 bg-[#B8CDD9] sm:w-32" />
             </div>
           </div>
 
-                    {/* Body — recipient name and description (centered, lower) */}
-          <div className="absolute left-1/2 top-[58%] w-full max-w-[80%] -translate-x-1/2 -translate-y-1/2 px-10 text-center sm:px-14">
+          {/* ===== BODY (Center) ===== */}
+          <div className="mt-8 text-center sm:mt-10">
             <p
-              className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500 sm:text-sm"
+              className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5D7B93] sm:text-xs"
               style={{ fontFamily: "system-ui, sans-serif" }}
             >
-              This certificate is proudly presented for honorable achievement to
+              This is to certify that
             </p>
             <h2
-              className="my-3 text-5xl italic text-slate-900 sm:text-6xl"
-              style={{ fontFamily: "'Brush Script MT', 'Lucida Handwriting', cursive" }}
+              className="mt-4 text-4xl uppercase tracking-[0.05em] text-[#2E86DE] sm:text-5xl"
+              style={{ fontFamily: "Georgia, serif" }}
             >
               {student.name}
             </h2>
-            <div className="mx-auto mb-3 h-px w-40 bg-amber-500 sm:w-48" />
             <p
-              className="text-base font-bold uppercase tracking-[0.2em] text-slate-800 sm:text-lg"
+              className="mt-4 text-sm italic text-[#5D6D7E] sm:text-base"
               style={{ fontFamily: "Georgia, serif" }}
+            >
+              has met every requirement and is hereby awarded
+            </p>
+            <p
+              className="mt-3 text-lg font-semibold uppercase tracking-[0.1em] text-[#2E86DE] sm:text-xl"
+              style={{ fontFamily: "system-ui, sans-serif" }}
             >
               AI-Powered Project Management
             </p>
             <p
-              className="mx-auto mt-3 max-w-2xl text-[11px] uppercase tracking-wide text-slate-500 sm:text-sm"
+              className="mx-auto mt-4 max-w-xl text-[10px] uppercase tracking-wide text-[#5D7B93] sm:text-xs"
               style={{ fontFamily: "system-ui, sans-serif" }}
             >
-              has successfully completed all 18 modules of the course, demonstrating proficiency in using AI tools for project planning, documentation, communication, and reporting.
+              having successfully completed all 18 modules demonstrating proficiency in AI tools for project planning, documentation, communication, and reporting
             </p>
           </div>
-          {/* Footer — signature lines and seals */}
-          <div className="absolute bottom-8 left-0 right-0 px-10 sm:px-14">
+
+          {/* ===== FOOTER (Bottom) ===== */}
+          <div className="absolute bottom-10 left-14 right-14 sm:bottom-12 sm:left-20 sm:right-20">
             <div className="flex items-end justify-between">
-              {/* Left signature */}
-              <div className="text-center">
-                <div className="mb-1 h-px w-32 bg-slate-400 sm:w-40" />
+              {/* Date — bottom left */}
+              <div className="text-left">
                 <p
-                  className="text-[9px] uppercase tracking-[0.2em] text-slate-500 sm:text-[10px]"
+                  className="text-[8px] uppercase tracking-[0.2em] text-[#7F8C8D] sm:text-[9px]"
                   style={{ fontFamily: "system-ui, sans-serif" }}
                 >
-                  Signature
+                  Date of Issue
                 </p>
-              </div>
-
-              {/* Center left — guarantee seal */}
-              <div className="flex flex-col items-center">
-                <svg viewBox="0 0 60 60" className="h-12 w-12 sm:h-14 sm:w-14">
-                  <circle cx="30" cy="30" r="26" fill="none" stroke="#1e293b" strokeWidth="2" />
-                  <circle cx="30" cy="30" r="22" fill="none" stroke="#1e293b" strokeWidth="1" strokeDasharray="2,2" />
-                  <text x="30" y="20" textAnchor="middle" fontSize="6" fill="#1e293b" fontFamily="Georgia, serif" fontWeight="bold">GUARANTEE</text>
-                  <text x="30" y="32" textAnchor="middle" fontSize="7" fill="#1e293b" fontFamily="Georgia, serif" fontWeight="bold">★</text>
-                  <text x="30" y="42" textAnchor="middle" fontSize="6" fill="#1e293b" fontFamily="Georgia, serif" fontWeight="bold">QUALITY</text>
-                </svg>
-              </div>
-
-              {/* Center right — date */}
-              <div className="text-center">
+                <div className="mt-2 h-px w-28 bg-[#BDC3C7] sm:w-36" />
                 <p
-                  className="text-sm font-semibold text-slate-900 sm:text-base"
+                  className="mt-1 text-xs font-semibold text-[#2C3E50] sm:text-sm"
                   style={{ fontFamily: "Georgia, serif" }}
                 >
                   {completionDate}
                 </p>
-                <div className="mx-auto mt-1 h-px w-24 bg-slate-400 sm:w-32" />
+              </div>
+
+              {/* Signature — center-left */}
+              <div className="text-center">
+                <div className="mb-2 h-px w-32 bg-[#BDC3C7] sm:w-40" />
                 <p
-                  className="mt-1 text-[9px] uppercase tracking-[0.2em] text-slate-500 sm:text-[10px]"
+                  className="text-[8px] uppercase tracking-[0.2em] text-[#7F8C8D] sm:text-[9px]"
                   style={{ fontFamily: "system-ui, sans-serif" }}
                 >
-                  Date of Completion
+                  Authorized Signatory
                 </p>
               </div>
 
-              {/* Center far right — red wax seal */}
+              {/* Circular seal — center */}
               <div className="flex flex-col items-center">
-                <svg viewBox="0 0 60 70" className="h-14 w-12 sm:h-16 sm:w-14">
-                  {/* Ribbon */}
-                  <path d="M 22,30 L 18,68 L 30,55 L 42,68 L 38,30 Z" fill="#7f1d1d" />
-                  <path d="M 25,30 L 22,60 L 30,52 Z" fill="#991b1b" />
-                  <path d="M 35,30 L 38,60 L 30,52 Z" fill="#991b1b" />
-                  {/* Wax seal */}
-                  <circle cx="30" cy="25" r="18" fill="#991b1b" stroke="#7f1d1d" strokeWidth="2" />
-                  <circle cx="30" cy="25" r="15" fill="none" stroke="#dc2626" strokeWidth="1" />
-                  <text x="30" y="22" textAnchor="middle" fontSize="5" fill="#fef2f2" fontFamily="Georgia, serif" fontWeight="bold">CERTIFIED</text>
-                  <text x="30" y="29" textAnchor="middle" fontSize="6" fill="#fbbf24" fontFamily="Georgia, serif" fontWeight="bold">★</text>
+                <svg viewBox="0 0 100 100" className="h-20 w-20 sm:h-24 sm:w-24">
+                  {/* Outer ring */}
+                  <circle cx="50" cy="50" r="46" fill="#1B2631" />
+                  <circle cx="50" cy="50" r="44" fill="none" stroke="#34495E" strokeWidth="1" strokeDasharray="2,2" />
+                  {/* Inner circle */}
+                  <circle cx="50" cy="50" r="36" fill="#34495E" />
+                  <circle cx="50" cy="50" r="34" fill="none" stroke="#5D7B93" strokeWidth="1" />
+                  {/* Top arc text — CERTIFIED */}
+                  <path id="topArc" d="M 15,50 A 35,35 0 0 1 85,50" fill="none" />
+                  <text fontSize="7" fill="#ECF0F1" fontFamily="system-ui, sans-serif" fontWeight="600" letterSpacing="2">
+                    <textPath href="#topArc" startOffset="50%" textAnchor="middle">CERTIFIED</textPath>
+                  </text>
+                  {/* Bottom arc text — DR. RAID HAMAWI */}
+                  <path id="bottomArc" d="M 18,55 A 33,33 0 0 0 82,55" fill="none" />
+                  <text fontSize="5" fill="#BDC3C7" fontFamily="system-ui, sans-serif" letterSpacing="1.5">
+                    <textPath href="#bottomArc" startOffset="50%" textAnchor="middle">DR. RAID HAMAWI</textPath>
+                  </text>
+                  {/* Center AI */}
+                  <text x="50" y="56" textAnchor="middle" fontSize="20" fill="#ECF0F1" fontFamily="Georgia, serif" fontWeight="bold">AI</text>
                 </svg>
               </div>
 
-              {/* Right signature */}
-              <div className="text-center">
-                <div className="mb-1 h-px w-32 bg-slate-400 sm:w-40" />
+              {/* QR code — bottom right */}
+              <div className="flex flex-col items-center">
+                <div className="relative border-2 border-[#2E86DE] p-1.5">
+                  {/* Corner brackets */}
+                  <div className="absolute -left-1 -top-1 h-2 w-2 border-l-2 border-t-2 border-[#2E86DE]" />
+                  <div className="absolute -right-1 -top-1 h-2 w-2 border-r-2 border-t-2 border-[#2E86DE]" />
+                  <div className="absolute -bottom-1 -left-1 h-2 w-2 border-b-2 border-l-2 border-[#2E86DE]" />
+                  <div className="absolute -bottom-1 -right-1 h-2 w-2 border-b-2 border-r-2 border-[#2E86DE]" />
+                  {/* QR placeholder */}
+                  <div className="grid h-16 w-16 grid-cols-7 grid-rows-7 gap-px sm:h-20 sm:w-20">
+                    {/* Position markers (3 corners) */}
+                    <div className="col-span-2 row-span-2 border-2 border-black bg-white">
+                      <div className="m-0.5 h-full w-full bg-black p-1">
+                        <div className="h-full w-full bg-white">
+                          <div className="m-0.5 h-full w-full bg-black" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-span-2 col-start-6 row-span-2 border-2 border-black bg-white">
+                      <div className="m-0.5 h-full w-full bg-black p-1">
+                        <div className="h-full w-full bg-white">
+                          <div className="m-0.5 h-full w-full bg-black" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-span-2 row-span-2 row-start-6 border-2 border-black bg-white">
+                      <div className="m-0.5 h-full w-full bg-black p-1">
+                        <div className="h-full w-full bg-white">
+                          <div className="m-0.5 h-full w-full bg-black" />
+                        </div>
+                      </div>
+                    </div>
+                    {/* Random data dots */}
+                    {[
+                      [3,1],[4,1],[5,1],[1,3],[3,3],[5,3],[2,4],[4,4],[6,4],
+                      [1,5],[3,5],[5,5],[7,5],[2,6],[4,6],[6,6],[3,7],[5,7],[7,7]
+                    ].map(([x, y], i) => (
+                      <div key={i} className="bg-black" style={{ gridColumn: x, gridRow: y }} />
+                    ))}
+                  </div>
+                </div>
                 <p
-                  className="text-[9px] uppercase tracking-[0.2em] text-slate-500 sm:text-[10px]"
+                  className="mt-1.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-[#2E86DE] sm:text-[9px]"
                   style={{ fontFamily: "system-ui, sans-serif" }}
                 >
-                  Signature
+                  Verify Certificate
                 </p>
               </div>
-            </div>
-
-            {/* Certificate ID — bottom right */}
-            <div className="mt-4 text-right">
-              <p
-                className="text-[9px] uppercase tracking-[0.2em] text-slate-400 sm:text-[10px]"
-                style={{ fontFamily: "system-ui, sans-serif" }}
-              >
-                Certificate ID: <span className="font-mono font-semibold text-slate-600">{certificateId}</span>
-              </p>
             </div>
           </div>
         </div>
