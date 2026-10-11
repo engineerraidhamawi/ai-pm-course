@@ -124,7 +124,42 @@ export const MODULES: Module[] = [
       { type: "prompt", title: "Document Summarization", code: "You are a project management assistant. Read the project description below\nand produce 10 key points a project manager must communicate to their team.\nFocus on deliverables, deadlines, constraints, and risks.\n\nProject description:\n[PASTE 1–3 PARAGRAPHS]" },
     ],
     keyTakeaways: ["AI is pattern-matching over text — powerful for drafting, unreliable for facts", "It doesn't know your project unless you tell it", "You are always the verification layer"],
-    instructorNote: "Address the job-security fear head-on. AI doesn't replace the PM — it removes the parts of the PM job nobody wanted anyway.",
+       instructorNote: "Address the job-security fear head-on. AI doesn't replace the PM — it removes the parts of the PM job nobody wanted anyway.",
+    quiz: [
+      {
+        question: "What is an AI language model fundamentally doing when it responds?",
+        options: [
+          "Searching a database of facts",
+          "Predicting likely text based on patterns",
+          "Reasoning through the problem logically",
+          "Accessing real-time information",
+        ],
+        correctIndex: 1,
+        explanation: "A language model is a next-word prediction engine. It predicts plausible text based on patterns, which is why it can be confidently wrong.",
+      },
+      {
+        question: "What is the most important framing of AI in project management?",
+        options: [
+          "AI is a search engine for project data",
+          "AI is a decision engine that can replace human judgement",
+          "AI is a drafting engine, not a decision engine",
+          "AI is a reasoning mind that understands your project",
+        ],
+        correctIndex: 2,
+        explanation: "AI produces starting points at speed. It does not produce final answers. You supply the facts, the judgement, the verification, and the accountability.",
+      },
+      {
+        question: "Why does AI sometimes state false things confidently?",
+        options: [
+          "It's programmed to lie",
+          "It optimizes for plausible text, not truth",
+          "It has outdated information only",
+          "It's confused by your prompt",
+        ],
+        correctIndex: 1,
+        explanation: "AI predicts plausible-sounding text. If a plausible-sounding answer is false, it may still produce it — which is why verification is always your job.",
+      },
+    ],
   },
   {
     id: "m2", number: 2, title: "Setting Up AI Tools and Optimizing Them for Project Workflows",
@@ -148,7 +183,42 @@ export const MODULES: Module[] = [
       { type: "list", items: ["One conversation per project (not per task) — preserves context", "Naming convention: ProjectName — ArtifactType — Version", "Projects/folders (Claude Projects, ChatGPT Projects) for uploaded reference files", "A running \"PM Prompt Library\" note where you save prompts that worked"] },
     ],
     keyTakeaways: ["Configuration beats prompt-crafting. Set it once, benefit forever", "One conversation per project preserves context", "Always include an anti-hallucination instruction"],
-    instructorNote: "Have learners complete setup during the session. People who leave without configuring their tool rarely come back.",
+       instructorNote: "Have learners complete setup during the session. People who leave without configuring their tool rarely come back.",
+    quiz: [
+      {
+        question: "What is the most important line to include in custom instructions?",
+        options: [
+          "Always respond in formal language",
+          "Use bullet points for all outputs",
+          "Never invent dates, budgets, or names not provided above",
+          "Respond within 100 words",
+        ],
+        correctIndex: 2,
+        explanation: "The anti-hallucination line is the single most important instruction. It prevents AI from inventing specific details that could end up in real deliverables.",
+      },
+      {
+        question: "Why should you keep one conversation per project (not per task)?",
+        options: [
+          "It's easier to find later",
+          "It preserves context across decisions",
+          "It uses fewer API credits",
+          "It's required by the AI tools",
+        ],
+        correctIndex: 1,
+        explanation: "One conversation per project preserves context. The AI remembers prior decisions, constraints, and stakeholder details within the same conversation.",
+      },
+      {
+        question: "What beats prompt-crafting for long-term AI quality?",
+        options: [
+          "Writing longer prompts",
+          "Using more examples in prompts",
+          "Configuration (custom instructions)",
+          "Switching AI tools frequently",
+        ],
+        correctIndex: 2,
+        explanation: "Configuration beats prompt-crafting. Set custom instructions once and benefit forever — every response assumes your role, standards, and formatting.",
+      },
+    ],
   },
   {
     id: "m3", number: 3, title: "Recognizing AI Strengths and Limitations in a PM Environment",
@@ -176,7 +246,42 @@ export const MODULES: Module[] = [
       { type: "list", items: ["Draft a project charter — Yellow", "Calculate the critical path — Red", "Write a status report narrative — Yellow", "Assess whether a team member is burning out — Red", "Brainstorm project risks — Green", "Reformat meeting notes into action items — Green"] },
     ],
     keyTakeaways: ["AI is strongest at structure and language, weakest at facts and judgement", "Verify in three passes: Facts, Fit, Feel", "Limitations are where you add irreplaceable value"],
-    instructorNote: "This module builds trust. Learners who see you honestly flagging AI failures will believe you when you praise AI successes.",
+       instructorNote: "This module builds trust. Learners who see you honestly flagging AI failures will believe you when you praise AI successes.",
+    quiz: [
+      {
+        question: "Why is AI unreliable at arithmetic?",
+        options: [
+          "It doesn't have a calculator built in",
+          "It predicts plausible text, not correct math",
+          "It rounds numbers incorrectly",
+          "It can't read numbers",
+        ],
+        correctIndex: 1,
+        explanation: "Language models predict plausible text. For critical path calculations or budget math, use your PM software — not AI.",
+      },
+      {
+        question: "What are the three review passes?",
+        options: [
+          "Draft, Refine, Final",
+          "Facts, Fit, Feel",
+          "Read, Edit, Send",
+          "Grammar, Tone, Format",
+        ],
+        correctIndex: 1,
+        explanation: "Facts (every specific checked against source), Fit (matches our templates and tone), Feel (would you be comfortable if your sponsor knew AI drafted it).",
+      },
+      {
+        question: "Give an example of a task that is always Red (human only).",
+        options: [
+          "Drafting a project charter",
+          "Brainstorming project risks",
+          "Assessing team morale",
+          "Reformatting meeting notes",
+        ],
+        correctIndex: 2,
+        explanation: "Assessing team morale and escalation decisions are always Red. AI cannot observe human behavior or relationship nuance.",
+      },
+    ],
   },
   {
     id: "m4", number: 4, title: "Creating Project Charters and Scope Documents with AI Assistance",
@@ -203,7 +308,42 @@ export const MODULES: Module[] = [
       { type: "prompt", title: "Assumption Audit", code: "Review the charter you just drafted and list every assumption you made\nthat I did not explicitly state. For each: what you assumed, why,\nand whether the charter would still make sense if the assumption were wrong.\n\nThen rewrite removing all unstated assumptions, replacing them with\n[TO BE CONFIRMED] where a real answer is needed." },
     ],
     keyTakeaways: ["Input quality determines output quality", "Always name the sections you want", "Refinement is the skill; the first draft is raw material"],
-    instructorNote: "Show a mediocre first output and then a great refined one. Learners need to see that iteration is normal.",
+        instructorNote: "Show a mediocre first output and then a great refined one. Learners need to see that iteration is normal.",
+    quiz: [
+      {
+        question: "What are the five ingredients of a strong charter brief?",
+        options: [
+          "Type/industry, scale, sponsor/stakeholders, goal/success, constraints",
+          "Budget, timeline, team, risks, deliverables",
+          "Project name, description, objectives, scope, budget",
+          "Background, problem statement, solution, ROI, timeline",
+        ],
+        correctIndex: 0,
+        explanation: "The five ingredients: project type and industry, scale (budget/timeline/team), sponsor and stakeholders by role, primary goal and success definition, and known constraints.",
+      },
+      {
+        question: "Why must you name the sections you want in the charter?",
+        options: [
+          "It makes the prompt longer",
+          "Otherwise the output structure is unpredictable",
+          "It's required by the AI tool",
+          "It uses more tokens",
+        ],
+        correctIndex: 1,
+        explanation: "Without naming the sections, you get whatever the AI feels like. Naming them gives you control over the output structure.",
+      },
+      {
+        question: "What does the 'push back' refinement move address?",
+        options: [
+          "Making the content more specific",
+          "Cutting unnecessary sections",
+          "AI inventing specificity to sound competent",
+          "Reformatting to match a template",
+        ],
+        correctIndex: 2,
+        explanation: "AI invents specificity (like phased rollout) to sound competent. Push back: 'You assumed X. I didn't specify that. Remove that assumption.'",
+      },
+    ],
   },
   {
     id: "m5", number: 5, title: "Generating Work Breakdown Structures (WBS) and Timelines",
@@ -222,7 +362,42 @@ export const MODULES: Module[] = [
       { type: "prompt", title: "Gap Check", code: "What is missing from this WBS? Consider:\n- Regulatory or compliance work\n- Training and change management\n- Procurement and vendor management\n- Data migration and cleanup\n- Post-launch support\n- Documentation and handover" },
     ],
     keyTakeaways: ["AI solves the blank-page problem", "Durations are guesses — you and your team estimate", "Always run a gap-check prompt after generation"],
-    instructorNote: "Have learners compare their AI WBS to a real WBS from a past project.",
+       instructorNote: "Have learners compare their AI WBS to a real WBS from a past project.",
+    quiz: [
+      {
+        question: "What is AI's main value in WBS generation?",
+        options: [
+          "Accurate duration estimates",
+          "Comprehensiveness — surfacing tasks you'd forget",
+          "Calculating the critical path",
+          "Identifying dependencies automatically",
+        ],
+        correctIndex: 1,
+        explanation: "AI's value is comprehensiveness, not accuracy. It lists tasks you'd have remembered later — the ones that cause surprises in week six.",
+      },
+      {
+        question: "Why should you not trust AI durations?",
+        options: [
+          "They're always too long",
+          "They're always too short",
+          "They're plausible guesses, not estimates grounded in your team",
+          "AI can't generate durations",
+        ],
+        correctIndex: 2,
+        explanation: "AI durations are plausible guesses. Real estimates come from your team's actual capacity and experience.",
+      },
+      {
+        question: "What should you always run after generating a WBS?",
+        options: [
+          "A cost analysis",
+          "A gap-check prompt",
+          "A stakeholder review",
+          "A risk assessment",
+        ],
+        correctIndex: 1,
+        explanation: "Always run a gap-check prompt: 'What is missing? Consider regulatory, training, procurement, data migration, post-launch support, and documentation.'",
+      },
+    ],
   },
   {
     id: "m6", number: 6, title: "Defining Milestones, Risks, and Mitigation Strategies",
@@ -243,7 +418,42 @@ export const MODULES: Module[] = [
       { type: "prompt", title: "Pre-Mortem", code: "Now imagine this project fails. Not slips — fails. Write a three-paragraph\npost-mortem from six months in the future explaining why.\n\nBe specific about which risks materialized, what we didn't see coming,\nand what we should have done differently." },
     ],
     keyTakeaways: ["Quantity instructions force breadth; category fields force coverage", "Milestones should be approval points, not just dates", "Red-team prompts turn AI into a reviewer"],
-    instructorNote: "This module produces the biggest aha moment. The red-team technique is worth lingering on.",
+       instructorNote: "This module produces the biggest aha moment. The red-team technique is worth lingering on.",
+    quiz: [
+      {
+        question: "What does 'at least 15 risks' achieve in a risk register prompt?",
+        options: [
+          "Makes the register look impressive",
+          "Forces breadth — without it, AI produces 6-8 generic risks",
+          "Is required by PMI standards",
+          "Uses more tokens so the AI works harder",
+        ],
+        correctIndex: 1,
+        explanation: "Without 'at least 15', AI produces 6-8 generic risks. The quantity instruction forces breadth. The category field ensures risks span dimensions.",
+      },
+      {
+        question: "What is a red-team prompt?",
+        options: [
+          "A prompt that generates security risks",
+          "Asking AI to critique its own output",
+          "A prompt for emergency situations",
+          "A prompt that uses red text",
+        ],
+        correctIndex: 1,
+        explanation: "A red-team prompt asks AI to review and critique its own output — which risks are over-stated, under-stated, or missed entirely.",
+      },
+      {
+        question: "What should milestones be?",
+        options: [
+          "Just dates on a timeline",
+          "Approval or decision points, not just dates",
+          "Only project phases",
+          "Optional in project planning",
+        ],
+        correctIndex: 1,
+        explanation: "Make each milestone an approval or decision point, not just a date. This makes them meaningful gates in the project lifecycle.",
+      },
+    ],
   },
   {
     id: "m7", number: 7, title: "Building RACI Matrices and Managing Resource Allocation",
@@ -263,7 +473,42 @@ export const MODULES: Module[] = [
       { type: "prompt", title: "Resource Allocation Summary", code: "Based on this project plan, create a resource allocation summary showing:\n- Each team member's role\n- Percentage allocation to this project\n- Key periods of high demand\n- Potential overallocation conflicts\n\nProject duration: 6 months\nTeam: 1 PM, 1 PO, 1 Tech Lead, 2 Developers, 1 Designer, 1 QA\n\nFlag any assumption you make about availability." },
     ],
     keyTakeaways: ["One A per row, always", "Use AI to validate RACIs, not just generate them", "Resource allocation output is a discussion aid, not a capacity plan"],
-    instructorNote: "RACI is politically sensitive. Acknowledge that the conversation about the RACI is often more valuable than the artifact.",
+        instructorNote: "RACI is politically sensitive. Acknowledge that the conversation about the RACI is often more valuable than the artifact.",
+    quiz: [
+      {
+        question: "How many people should be Accountable per RACI row?",
+        options: [
+          "Anyone who contributes",
+          "Exactly one",
+          "Up to three",
+          "It depends on the task",
+        ],
+        correctIndex: 1,
+        explanation: "Exactly one A per row, always. Two A's means no A — accountability becomes diluted and nobody owns the outcome.",
+      },
+      {
+        question: "Why are too many C's (Consulted) a problem?",
+        options: [
+          "They cost more money",
+          "They create bottlenecks and coordination overhead",
+          "They reduce quality",
+          "They're not a problem",
+        ],
+        correctIndex: 1,
+        explanation: "Too many C's create bottlenecks. Everyone needs to be consulted before a decision can be made, which slows everything down.",
+      },
+      {
+        question: "What is AI's role in resource allocation?",
+        options: [
+          "It creates the final capacity plan",
+          "It's a discussion aid, not a capacity plan",
+          "It calculates exact availability",
+          "It replaces resource managers",
+        ],
+        correctIndex: 1,
+        explanation: "AI cannot know actual availability, competing priorities, leave, or vendor capacity. The output is a thinking aid, not a capacity plan.",
+      },
+    ],
   },
   {
     id: "m8", number: 8, title: "Creating Meeting Agendas, Notes, and Action Items",
@@ -282,7 +527,42 @@ export const MODULES: Module[] = [
       { type: "prompt", title: "Follow-Up Email", code: "Using this summary, draft a follow-up email to all attendees that:\n- Thanks them for their time\n- Lists the decisions made\n- Lists action items by owner (keep UNASSIGNED and INFERRED markers visible)\n- States the date of the next meeting\n- Professional but warm tone\n- Under 250 words" },
     ],
     keyTakeaways: ["Context and goal turn a generic agenda into a useful one", "Messy notes in, organized output out — the biggest time saver in the course", "Always instruct AI not to invent owners"],
-    instructorNote: "If learners only adopt one technique from this course, this is usually the one. Make sure they save the prompt.",
+       instructorNote: "If learners only adopt one technique from this course, this is usually the one. Make sure they save the prompt.",
+    quiz: [
+      {
+        question: "What three elements make a strong agenda prompt?",
+        options: [
+          "Time, location, attendees",
+          "Situation, attendees, meeting goal",
+          "Topic, duration, materials",
+          "Background, objectives, outcomes",
+        ],
+        correctIndex: 1,
+        explanation: "The situation (context), the attendees (who's there), and the meeting goal (what you want to achieve). These three turn a generic agenda into a useful one.",
+      },
+      {
+        question: "What instruction prevents AI from inventing action item owners?",
+        options: [
+          "List all owners clearly",
+          "Flag as UNASSIGNED rather than inventing a name",
+          "Assign owners based on role",
+          "Leave owners blank",
+        ],
+        correctIndex: 1,
+        explanation: "Without the UNASSIGNED rule, AI will confidently assign work to people who never agreed to it. The rule protects you in both directions.",
+      },
+      {
+        question: "How messy can input meeting notes be?",
+        options: [
+          "They must be cleaned first",
+          "They should be formatted as bullet points",
+          "Very messy — fragments, typos, tangents all fine",
+          "They need to be transcribed perfectly",
+        ],
+        correctIndex: 2,
+        exlanation: "Very messy notes are fine. Fragments, typos, tangents — AI handles all of it. Don't clean notes first; that's the work you're avoiding.",
+      },
+    ],
   },
   {
     id: "m9", number: 9, title: "Writing Executive Summaries and Stakeholder Communications",
@@ -307,7 +587,42 @@ export const MODULES: Module[] = [
       { type: "prompt", title: "Remove Hedging", code: "Review this draft and:\n1. Remove all hedging language — \"seems,\" \"perhaps,\" \"may,\" \"we hope\"\n2. Remove justification phrases — \"despite our best efforts,\" \"unfortunately\"\n3. Remove apology language unless I explicitly asked for it\n4. Reorder so the position appears in the first sentence\n\nKeep the facts identical. Do not soften the message — sharpen it." },
     ],
     keyTakeaways: ["Same facts, different emphasis, per audience", "Tone is a dial you can turn with explicit instructions", "Sensitive messages: AI drafts, you write"],
-    instructorNote: "Emphasize that AI-assisted writing is not dishonest — you're still choosing what to say.",
+       instructorNote: "Emphasize that AI-assisted writing is not dishonest — you're still choosing what to say.",
+    quiz: [
+      {
+        question: "What is the core principle of stakeholder communication?",
+        options: [
+          "Write one version and send to everyone",
+          "There is no good update — only a good update for a specific reader",
+          "Always write formally",
+          "Keep it under 100 words",
+        ],
+        correctIndex: 1,
+        explanation: "There is no such thing as a good update — only a good update for a specific reader. Same facts, different emphasis, per audience.",
+      },
+      {
+        question: "What does 'remove hedging language' do?",
+        options: [
+          "Makes the message shorter",
+          "Makes the position clear and confident",
+          "Removes important context",
+          "Is only for executive audiences",
+        ],
+        correctIndex: 1,
+        explanation: "Removing hedging ('seems,' 'perhaps,' 'may,' 'unfortunately') makes the position clear and confident. Lead with the outcome, not the apology.",
+      },
+      {
+        question: "When should you NOT use AI for communication?",
+        options: [
+          "Status updates",
+          "Sensitive, personal, or politically charged messages",
+          "Meeting recaps",
+          "Stakeholder emails",
+        ],
+        correctIndex: 1,
+        explanation: "Write it yourself: performance conversations, personal matters, political conflict, apologies. AI drafts, you rewrite: delays with consequences, budget overruns.",
+      },
+    ],
   },
   {
     id: "m10", number: 10, title: "Generating Status Reports and Progress Dashboards",
@@ -324,7 +639,42 @@ export const MODULES: Module[] = [
       { type: "prompt", title: "Reusable Template", code: "Save this as a reusable template. Each week I will provide new raw data\nand you will generate the same format. Maintain:\n- Identical section structure and order\n- The RAG status I specify (do not infer it)\n- Professional tone\n- Highlight any variance between Target and Actual\n- Never invent metrics I did not provide\n- If a metric is missing, mark it as [NOT PROVIDED]\n\nConfirm you understand and ask me for this week's data." },
     ],
     keyTakeaways: ["AI converts raw data into professional narrative — fast", "You own the RAG judgement", "Build the template once; reuse it weekly"],
-    instructorNote: "This is where the time-savings promise from Module 1 gets delivered.",
+       instructorNote: "This is where the time-savings promise from Module 1 gets delivered.",
+    quiz: [
+      {
+        question: "What does AI do well in status reporting?",
+        options: [
+          "Deciding the RAG status",
+          "Turning raw data into professional narrative",
+          "Calculating budget variance",
+          "Determining project health",
+        ],
+        correctIndex: 1,
+        explanation: "AI converts raw data into professional narrative — fast. It turns your bullet points into polished, formatted reports.",
+      },
+      {
+        question: "What must AI never decide?",
+        options: [
+          "The format of the report",
+          "The narrative tone",
+          "The RAG (Red/Amber/Green) status",
+          "The section headings",
+        ],
+        correctIndex: 2,
+        explanation: "You own the RAG judgement. Lock it explicitly: 'Set the overall status to AMBER. Do not infer it from the data I provide.'",
+      },
+      {
+        question: "Why build a reusable status report template?",
+        options: [
+          "It uses fewer tokens",
+          "Consistency, speed, and preserved format across weeks",
+          "It's required by stakeholders",
+          "It's the only way AI can generate reports",
+        ],
+        correctIndex: 1,
+        explanation: "Build the template once; reuse it weekly. Identical structure every week, professional tone, and you just paste in new raw data.",
+      },
+    ],
   },
   {
     id: "m11", number: 11, title: "Drafting Multiple Documents and Emails to Reduce Administrative Burden",
@@ -342,7 +692,42 @@ export const MODULES: Module[] = [
       { type: "prompt", title: "Prompt Library Entry Format", code: "TITLE:       [What the prompt does]\nWHEN TO USE: [Trigger — one sentence]\nPROMPT:      [Full text with [VARIABLES] marked]\nTOOL:        [Claude / ChatGPT / Gemini / Any]\nTIME SAVED:  [Estimate in minutes or hours]\nNOTES:       [What to watch for — the \"learned the hard way\" field]" },
     ],
     keyTakeaways: ["Supply facts once, multiply formats", "Template + variable filling beats rewriting from scratch", "Your prompt library is a career asset"],
-    instructorNote: "Emphasize that the prompt library compounds. Every hour spent building it saves many hours over a year.",
+       instructorNote: "Emphasize that the prompt library compounds. Every hour spent building it saves many hours over a year.",
+    quiz: [
+      {
+        question: "What's the multiplication technique?",
+        options: [
+          "Generating multiple versions of the same document",
+          "One input, many output formats",
+          "Using multiple AI tools at once",
+          "Creating multiple personas",
+        ],
+        correctIndex: 1,
+        explanation: "Supply facts once, multiply formats. One meeting input → calendar invite, reminder email, Slack message, prep checklist, follow-up template.",
+      },
+      {
+        question: "What are the five parts of an escalation email?",
+        options: [
+          "Greeting, context, problem, ask, closing",
+          "Situation, Impact, What we've tried, What we need, Deadline",
+          "Background, issue, impact, solution, timeline",
+          "To, From, Subject, Body, Signature",
+        ],
+        correctIndex: 1,
+        explanation: "Situation (one factual sentence), Impact (specific), What we've tried, What we need (actionable), Deadline. No apology language. No 'unfortunately.'",
+      },
+      {
+        question: "Why build a written prompt library?",
+        options: [
+          "It's required for the course",
+          "Reuse, consistency, and it becomes a career asset",
+          "To share with the team",
+          "To sell it later",
+        ],
+        correctIndex: 1,
+        explanation: "Your prompt library is a career asset. Every hour spent building it saves many hours over a year. It compounds in value.",
+      },
+    ],
   },
   {
     id: "m12", number: 12, title: "Creating Reusable Prompt Templates and Workflows",
@@ -365,7 +750,42 @@ export const MODULES: Module[] = [
       { type: "list", items: ["One process, one conversation — don't mix projects", "Reference prior outputs explicitly — \"Using the Top 5 risks from Step 2\"", "Check each step before continuing — errors compound", "Save the workflow, not the outputs"] },
     ],
     keyTakeaways: ["Templates beat one-off prompts", "Chaining multiplies value: five deliverables from one input", "Every recurring process deserves a saved prompt"],
-    instructorNote: "This is the pivot module. Learners who build a real workflow here tend to keep using it permanently.",
+       instructorNote: "This is the pivot module. Learners who build a real workflow here tend to keep using it permanently.",
+    quiz: [
+      {
+        question: "What are the four parts of a prompt template?",
+        options: [
+          "Title, Description, Prompt, Notes",
+          "Role, Task, Constraints, Variables",
+          "Context, Input, Output, Format",
+          "Header, Body, Footer, Variables",
+        ],
+        correctIndex: 1,
+        explanation: "Role framing (who the AI is), Task (one clear deliverable), Constraints (format/length/tone/what not to do), Variables (clearly marked placeholders).",
+      },
+      {
+        question: "What is workflow chaining?",
+        options: [
+          "Using multiple AI tools in sequence",
+          "Using one prompt's output as the next prompt's input",
+          "Chaining multiple team members to a workflow",
+          "Linking prompts to external tools",
+        ],
+        correctIndex: 1,
+        explanation: "Workflow chaining uses one prompt's output as the next prompt's input. Five deliverables from one starting description, all in one conversation.",
+      },
+      {
+        question: "Why does chaining work in one conversation?",
+        options: [
+          "AI has a better memory in long conversations",
+          "AI retains prior context",
+          "It uses fewer API calls",
+          "It's required by the AI tools",
+        ],
+        correctIndex: 1,
+        explanation: "AI retains prior context within a conversation. Reference prior outputs explicitly: 'Using the Top 5 risks from Step 2...'",
+      },
+    ],
   },
   {
     id: "m13", number: 13, title: "Managing Change Requests Effectively",
@@ -384,7 +804,42 @@ export const MODULES: Module[] = [
       { type: "prompt", title: "Alternatives Considered", code: "For this change request, generate an \"Alternatives Considered\"\nsection with at least three alternatives.\n\nFor each, include:\n- What the alternative would be\n- Why it was not chosen\n- The trade-off it represents\n\nThe alternatives should be realistic — options the change board\nwould genuinely consider, not straw men." },
     ],
     keyTakeaways: ["AI gives change requests thoroughness, not judgement", "Impact analysis across six dimensions catches what you'd miss", "Different audiences need different change messages"],
-    instructorNote: "Change requests are politically loaded. Emphasize that AI helps you be thorough and fair.",
+       instructorNote: "Change requests are politically loaded. Emphasize that AI helps you be thorough and fair.",
+    quiz: [
+      {
+        question: "What are the six dimensions of impact analysis?",
+        options: [
+          "Scope, schedule, cost, quality, risk, resources",
+          "Timeline, Budget, Resources, Risks, Dependencies, Quality",
+          "Time, money, people, technology, process, governance",
+          "Technical, operational, financial, legal, strategic, reputational",
+        ],
+        correctIndex: 1,
+        explanation: "Timeline (tasks/milestones), Budget (direct/indirect), Resources (who/how long), Risks (new/existing affected), Dependencies (other projects), Quality (testing/debt).",
+      },
+      {
+        question: "Why is 'Alternatives Considered' important in a change request?",
+        options: [
+          "It makes the request look longer",
+          "It shows evaluation, not just acceptance",
+          "It's required by the change board",
+          "It provides backup options",
+        ],
+        correctIndex: 1,
+        explanation: "Without it, the request looks like a fait accompli. With it, it looks like a decision that was properly evaluated. The credibility move.",
+      },
+      {
+        question: "Who needs change communications?",
+        options: [
+          "Only the sponsor",
+          "Only the delivery team",
+          "Requester, delivery team, and sponsor",
+          "Only the requester",
+        ],
+        correctIndex: 2,
+        explanation: "Three audiences: Requester (confirmation, warm), Delivery team (what changes, practical), Sponsor (decision summary, brief). Different message per audience.",
+      },
+    ],
   },
   {
     id: "m14", number: 14, title: "Using Advanced Features",
@@ -413,7 +868,42 @@ export const MODULES: Module[] = [
       { type: "list", items: ["Data rules — what can be uploaded? What can't?", "Ownership — who owns the prompt library? Who reviews custom assistants?", "Consistency — one shared library or individual?", "Disclosure — when do we disclose AI use?"] },
     ],
     keyTakeaways: ["Advanced features scale AI from personal tool to team capability", "Custom assistants + knowledge files make output organization-specific", "Automation should always leave a human approval step"],
-    instructorNote: "Governance discussions can get long. Cap them. The hands-on Custom GPT build is the memory-maker.",
+        instructorNote: "Governance discussions can get long. Cap them. The hands-on Custom GPT build is the memory-maker.",
+    quiz: [
+      {
+        question: "What do knowledge files do in a custom assistant?",
+        options: [
+          "Make the AI faster",
+          "Give it your templates, standards, and examples",
+          "Reduce the cost of AI calls",
+          "Are required by all AI tools",
+        ],
+        correctIndex: 1,
+        explanation: "Knowledge files are what makes a custom assistant yours — your PM templates, brand style guide, and example projects. This is what makes output organization-specific.",
+      },
+      {
+        question: "Why keep human review in automated workflows?",
+        options: [
+          "It's required by law",
+          "AI drafts; humans own judgement — every time",
+          "It costs less",
+          "AI can't generate without it",
+        ],
+        correctIndex: 1,
+        explanation: "Automation always leaves a human approval step. AI drafts; humans own judgement. Example: Jira status changes to 'Blocked' → AI generates escalation draft → human reviews and sends.",
+      },
+      {
+        question: "What should a team AI standard cover?",
+        options: [
+          "Data rules, ownership, consistency, disclosure",
+          "Just data rules",
+          "Just disclosure",
+          "Tool selection only",
+        ],
+        correctIndex: 0,
+        explanation: "Answer four questions: Data rules (what can be uploaded?), Ownership (who owns the prompt library?), Consistency (one shared library or individual?), Disclosure (when do we disclose AI use?).",
+      },
+    ],
   },
   {
     id: "m15", number: 15, title: "Capstone Project — End-to-End AI-Powered Project Management",
@@ -441,7 +931,42 @@ export const MODULES: Module[] = [
       { type: "list", items: ["Drafting engine, not decision engine", "Configuration beats prompt-crafting", "Verify: Facts, Fit, Feel", "Input quality determines output quality", "AI solves the blank page", "Quantity and category force breadth", "One A per row", "Messy in, organized out", "No good update — only a good update for a reader", "You own the RAG", "Supply facts once, multiply formats", "Chain prompts into workflows", "AI gives thoroughness, you give judgement", "Automation always leaves a human step", "The prompt library is the asset"] },
     ],
     keyTakeaways: ["The capstone is where the course compounds into a habit", "The reflection is the assessment — not the deliverables", "Your prompt library is the lasting artifact"],
-    instructorNote: "Weight the reflection heavily — it reveals whether they've internalized the judgement layer or just learned to press buttons.",
+        instructorNote: "Weight the reflection heavily — it reveals whether they've internalized the judgement layer or just learned to press buttons.",
+    quiz: [
+      {
+        question: "How many deliverables are in the capstone?",
+        options: [
+          "10",
+          "13",
+          "15",
+          "18",
+        ],
+        correctIndex: 1,
+        explanation: "13 deliverables: Charter, WBS, Risk Register, RACI, Milestone Plan, 3 Meeting Agendas, Meeting Notes, 2 Status Reports, Change Request, Executive Summary, 3 Stakeholder Emails, Lessons Learned, and a 10+ entry Prompt Library.",
+      },
+      {
+        question: "What is non-negotiable in the capstone presentation?",
+        options: [
+          "Showing all 13 deliverables",
+          "Naming a specific thing AI got wrong and how you caught it",
+          "Demonstrating every prompt used",
+          "Having a slide deck",
+        ],
+        correctIndex: 1,
+        explanation: "Item 4 of the presentation — 'What AI got wrong' — is mandatory. If you can't name one specific error and how you caught it, the assessor will assume you weren't checking carefully.",
+      },
+      {
+        question: "What is the through-line?",
+        options: [
+          "The main narrative of the course",
+          "One principle per module — 15 total",
+          "The connection between modules",
+          "The final reflection",
+        ],
+        correctIndex: 1,
+        explanation: "The through-line is 15 principles, one per module: Drafting engine not decision engine, Configuration beats prompt-crafting, Verify: Facts Fit Feel, and so on.",
+      },
+    ],
   },
   {
     id: "m16", number: 16, title: "When AI Goes Wrong",
@@ -464,7 +989,42 @@ export const MODULES: Module[] = [
       { type: "paragraph", text: "Rule of three: if you've iterated three times and it's still wrong, restart with a better prompt." },
     ],
     keyTakeaways: ["AI will fail. The question is whether you catch it and recover cleanly", "Diagnose before rewriting: prompt, context, or tool problem", "After three failed iterations, restart with a better prompt", "Lead with the correction. Never blame AI"],
-    instructorNote: "Run every failure live. Don't teach this as a warning — teach it as a routine.",
+        instructorNote: "Run every failure live. Don't teach this as a warning — teach it as a routine.",
+    quiz: [
+      {
+        question: "What are the five failure modes?",
+        options: [
+          "Hallucination, over-commitment, tone mismatch, over-generalisation, silent context loss",
+          "Grammar, spelling, tone, format, length",
+          "Slow responses, wrong format, bad tone, missing info, extra info",
+          "Wrong tool, wrong prompt, wrong context, wrong output, wrong audience",
+        ],
+        correctIndex: 0,
+        explanation: "Hallucinated specifics (High), Over-commitment (High), Tone mismatch (Medium), Over-generalisation (Medium), Silent context loss (Medium). Name it to fix it.",
+      },
+      {
+        question: "What's the rule of three?",
+        options: [
+          "Three prompts per task",
+          "Restart after three failed iterations",
+          "Three reviewers per document",
+          "Three audiences per message",
+        ],
+        correctIndex: 1,
+        explanation: "If you've iterated three times and it's still wrong, restart with a better prompt. Don't keep iterating — errors compound.",
+      },
+      {
+        question: "What are the three diagnostic tests?",
+        options: [
+          "Prompt, context, tool",
+          "Read, edit, send",
+          "Draft, refine, final",
+          "Facts, fit, feel",
+        ],
+        correctIndex: 0,
+        explanation: "Test 1: Prompt problem? Test 2: Context problem? Test 3: Tool problem? Diagnose before rewriting — each requires a different fix.",
+      },
+    ],
   },
   {
     id: "m17", number: 17, title: "The Business Case for AI in Your PMO",
@@ -488,7 +1048,42 @@ export const MODULES: Module[] = [
       { type: "prompt", title: "One-Page Business Proposal", code: "Draft a one-page business proposal to my [CFO / PMO director] for\napproving a 90-day AI adoption pilot.\n\nUse this seven-section structure:\n1. The ask — one sentence, specific\n2. The problem — what's broken now\n3. The evidence — measured savings with method and window\n4. The economics — gross, cost, net (both full and blended adoption)\n5. The pilot — scope, duration, success criteria, reversibility\n6. The risks and mitigations\n7. The decision requested — one sentence with a deadline\n\nContext: [team size, savings, cost, scope]\n\nConstraints:\n- Must fit on one page\n- No marketing language\n- Lead with the number, not the technology\n- Every claim must be defensible\n- Two-number economics (100% and 55% adoption)\n\nTone: professional, direct, no enthusiasm. Written for a sceptical\nexecutive who has 3 minutes to read it." },
     ],
     keyTakeaways: ["A business case is a measured claim, not a strong opinion", "Two weeks of logging beats six months of projection", "Lead with Layer 1, present Layers 2 and 3 as upside", "Use the two-number pitch", "All four objections respond to pilots and specificity"],
-    instructorNote: "Have learners do the two-week measurement. Force the read-as-your-CFO exercise. Rehearse the objections out loud.",
+        instructorNote: "Have learners do the two-week measurement. Force the read-as-your-CFO exercise. Rehearse the objections out loud.",
+    quiz: [
+      {
+        question: "What are the three layers of time savings?",
+        options: [
+          "Daily, weekly, monthly",
+          "Individual, team, organisational",
+          "Task, project, portfolio",
+          "Direct, indirect, hidden",
+        ],
+        correctIndex: 1,
+        explanation: "Layer 1: Individual (8-12 hrs/week per PM). Layer 2: Team (3-5× multiplier). Layer 3: Organisation (2-4% of delivery cost). Defensibility beats magnitude.",
+      },
+      {
+        question: "What is the blended adoption factor?",
+        options: [
+          "25%",
+          "55%",
+          "75%",
+          "100%",
+        ],
+        correctIndex: 1,
+        explanation: "Blended adoption is 55% — accounting for power users (20% at 100%), steady users (50% at 60%), occasional users (20% at 25%), and non-adopters (10% at 0%).",
+      },
+      {
+        question: "What's the two-number pitch?",
+        options: [
+          "Hours saved and dollars saved",
+          "Full adoption upside and blended realistic number",
+          "Layer 1 and Layer 2 savings",
+          "Manual time and AI-assisted time",
+        ],
+        correctIndex: 1,
+        explanation: "'Full adoption would deliver X. Our realistic model assumes 55% blended effectiveness and delivers Y. We're asking you to approve Y, and we'll report against X as an upside.'",
+      },
+    ],
   },
   {
     id: "m18", number: 18, title: "Operating in a Mixed Team",
@@ -514,7 +1109,42 @@ export const MODULES: Module[] = [
       { type: "list", items: ["Practice 1 — The Shared Prompt Library (Opt-In): Set up a shared doc. No requirement to contribute or use. Call it \"Team prompts,\" not \"AI library.\"", "Practice 2 — The One-Sentence Process Note: Optional. Not policed. Just available.", "Practice 3 — The Opt-In Pilot: Volunteers only, 60 days, measure hours saved on three tasks, monthly report to team.", "Practice 4 — The Non-Adopter's Guide: You're never required to use AI. Your process is valid. Naming non-adoption as valid removes pressure — which paradoxically makes adoption more likely."] },
     ],
     keyTakeaways: ["Every PM team is a mixed team. Some just haven't acknowledged it", "Four archetypes: different approaches for each", "Never defend the tool — defend the standard, process, or outcome", "Answer direct questions plainly. No apology, no defensiveness, no lying", "Team practices work best when opt-in. Mandates fail"],
-    instructorNote: "Recreate the awkward silence live. Have learners identify their own archetype privately. Watch for the my team is totally aligned reaction. Cap the should I disclose discussion.",
+        instructorNote: "Recreate the awkward silence live. Have learners identify their own archetype privately. Watch for the my team is totally aligned reaction. Cap the should I disclose discussion.",
+    quiz: [
+      {
+        question: "What are the four team archetypes?",
+        options: [
+          "Leader, follower, lurker, troll",
+          "Skeptic, Secret User, Over-User, Cautious Considerer",
+          "Beginner, intermediate, advanced, expert",
+          "Early adopter, majority, late majority, laggard",
+        ],
+        correctIndex: 1,
+        explanation: "The Skeptic (openly opposed), The Secret User (uses but won't admit), The Over-User (uses for everything, sometimes badly), The Cautious Considerer (open but uncertain).",
+      },
+      {
+        question: "What's the two-question review protocol?",
+        options: [
+          "Is it true? Is it ours?",
+          "Is it complete? Is it correct?",
+          "Is it on time? Is it on budget?",
+          "Is it clear? Is it concise?",
+        ],
+        correctIndex: 0,
+        explanation: "Is it true? (every fact checked against source) and Is it ours? (matches our standards and voice). This removes the AI question from peer review entirely.",
+      },
+      {
+        question: "What do all five awkward conversations have in common?",
+        options: [
+          "They should be avoided",
+          "Never defend the tool — defend the standard, process, or outcome",
+          "Always disclose AI use",
+          "Never admit to using AI",
+        ],
+        correctIndex: 1,
+        explanation: "Never defend the tool — defend the standard, process, or outcome. Never make it personal. Always offer an opening. Model the behaviour you want.",
+      },
+    ],
   },
 ];
 
