@@ -156,35 +156,34 @@ export function Certificate({ student, modules, completedCount, onPrint }: Props
             </div>
           </div>
 
-          {/* Body — recipient name and description */}
-          <div className="absolute right-10 top-[40%] max-w-[60%] -translate-y-1/2 text-right sm:right-14">
+                    {/* Body — recipient name and description (centered, lower) */}
+          <div className="absolute left-1/2 top-[58%] w-full max-w-[80%] -translate-x-1/2 -translate-y-1/2 px-10 text-center sm:px-14">
             <p
-              className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500 sm:text-xs"
+              className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500 sm:text-sm"
               style={{ fontFamily: "system-ui, sans-serif" }}
             >
               This certificate is proudly presented for honorable achievement to
             </p>
             <h2
-              className="my-2 text-4xl italic text-slate-900 sm:text-5xl"
+              className="my-3 text-5xl italic text-slate-900 sm:text-6xl"
               style={{ fontFamily: "'Brush Script MT', 'Lucida Handwriting', cursive" }}
             >
               {student.name}
             </h2>
-            <div className="mx-auto mb-2 h-px w-24 bg-amber-500 sm:w-32" />
+            <div className="mx-auto mb-3 h-px w-40 bg-amber-500 sm:w-48" />
             <p
-              className="text-sm font-bold uppercase tracking-[0.15em] text-slate-800 sm:text-base"
+              className="text-base font-bold uppercase tracking-[0.2em] text-slate-800 sm:text-lg"
               style={{ fontFamily: "Georgia, serif" }}
             >
               AI-Powered Project Management
             </p>
             <p
-              className="mt-2 text-[10px] uppercase tracking-wide text-slate-500 sm:text-xs"
+              className="mx-auto mt-3 max-w-2xl text-[11px] uppercase tracking-wide text-slate-500 sm:text-sm"
               style={{ fontFamily: "system-ui, sans-serif" }}
             >
               has successfully completed all 18 modules of the course, demonstrating proficiency in using AI tools for project planning, documentation, communication, and reporting.
             </p>
           </div>
-
           {/* Footer — signature lines and seals */}
           <div className="absolute bottom-8 left-0 right-0 px-10 sm:px-14">
             <div className="flex items-end justify-between">
