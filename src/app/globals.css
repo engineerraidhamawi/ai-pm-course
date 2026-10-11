@@ -57,3 +57,21 @@
     color: var(--foreground);
   }
 }
+/* Print styles for certificate */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #certificate-paper, #certificate-paper * {
+    visibility: visible;
+  }
+  #certificate-paper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: 4px double #f59e0b !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
