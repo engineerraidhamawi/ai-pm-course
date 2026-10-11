@@ -121,8 +121,22 @@ export type DashboardStudent = Student & {
   }[];
 };
 
-export async function fetchDashboard(): Promise<DashboardStudent[]> {
-  const res = await fetch("/api/dashboard");
+export type DashboardStudent = Student & {
+  progress: {
+    moduleId: string;
+    status: ProgressStatus;
+    percent: number;
+    lastVisited: string;
+    completedAt: string | null;
+  }[];
+};
+
+export async function fetchDashboard(instructorKey?: string): Promise<DashboardStudent[]> {
+  const headers: Record<string, string> = {};
+  if (instructorKey) {
+    headers["Authorization"] = `Bearer ${instructorKey}`;
+  }
+  const res = await fetch("/api/dashboard", { headers });
   if (!res.ok) throw new Error("Failed to fetch dashboard");
   const data = await res.json();
   return data.students as DashboardStudent[];

@@ -3,9 +3,11 @@ import { db } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   try {
+    // Check for instructor password
     const expectedKey = process.env.INSTRUCTOR_KEY;
     if (expectedKey) {
-      const providedKey = req.nextUrl.searchParams.get("key") ?? "";
+      const authHeader = req.headers.get("authorization");
+      const providedKey = authHeader?.replace("Bearer ", "") ?? "";
       if (providedKey !== expectedKey) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }

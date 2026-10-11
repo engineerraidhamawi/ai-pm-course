@@ -7,31 +7,68 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, RefreshCw, Search, Download, Trophy } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { ArrowLeft, RefreshCw, Search, Download, Trophy, Lock } from "lucide-react";
 import { MODULES } from "@/lib/course-data";
 
 type Props = { onBack: () => void };
 
 export function InstructorDashboard({ onBack }: Props) {
+  const [authed, setAuthed] = useState(false);
+  const [keyInput, setKeyInput] = useState("");
+  const [authError, setAuthError] = useState<string | null>(null);
+
   const [students, setStudents] = useState<DashboardStudent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
-  const load = async () => {
+  // Load saved key from sessionStorage on mount
+  useEffect(() => {
+    const savedKey = sessionStorage.getItem("instructor-key");
+    if (savedKey) {
+      setKeyInput(savedKey);
+      loadStudents(savedKey);
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  async function loadStudents(key: string) {
     setLoading(true);
     setError(null);
+    setAuthError(null);
     try {
-      const data = await fetchDashboard();
+      const data = await fetchDashboard(key);
       setStudents(data);
+      setAuthed(true);
+      sessionStorage.setItem("instructor-key", key);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load");
+      const msg = e instanceof Error ? e.message : "Failed to load";
+      if (msg.includes("Unauthorized") || msg.includes("Failed to fetch dashboard")) {
+        setAuthError("Incorrect password. Please try again.");
+        setAuthed(false);
+        sessionStorage.removeItem("instructor-key");
+      } else {
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  useEffect(() => { load(); }, []);
+  function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    if (!keyInput.trim()) return;
+    loadStudents(keyInput.trim());
+  }
+
+  function handleLogout() {
+    sessionStorage.removeItem("instructor-key");
+    setAuthed(false);
+    setKeyInput("");
+    setStudents([]);
+  }
 
   const totalModules = MODULES.length;
 
@@ -80,9 +117,56 @@ export function InstructorDashboard({ onBack }: Props) {
     URL.revokeObjectURL(url);
   }
 
+  // ---- Login screen ----
+  if (!authed) {
+    return (
+      <div className="mx-auto max-w-md px-4 pb-24 pt-20 sm:px-6">
+        <button
+          onClick={onBack}
+          className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-indigo-600"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to course
+        </button>
+
+        <Card className="border-slate-200 shadow-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-sky-500 text-white shadow">
+              <Lock className="h-7 w-7" />
+            </div>
+            <CardTitle className="text-xl">Instructor Access</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4 text-center text-sm text-slate-500">
+              Enter the instructor password to view student progress.
+            </p>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="instructor-key">Password</Label>
+                <Input
+                  id="instructor-key"
+                  type="password"
+                  value={keyInput}
+                  onChange={(e) => setKeyInput(e.target.value)}
+                  placeholder="Enter instructor password"
+                  autoFocus
+                />
+              </div>
+              {authError && <p className="text-sm text-red-600">{authError}</p>}
+              <Button type="submit" className="w-full bg-indigo-600 text-white hover:bg-indigo-700" disabled={loading}>
+                {loading ? "Checking…" : "Unlock Dashboard"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // ---- Dashboard (when authed) ----
   return (
     <div className="mx-auto max-w-6xl px-4 pb-24 pt-6 sm:px-6">
-      <div className="mb-4 flex items-center gap-3">
+      <div className="mb-4 flex items-center justify-between">
         <button
           onClick={onBack}
           className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-indigo-600"
@@ -90,6 +174,10 @@ export function InstructorDashboard({ onBack }: Props) {
           <ArrowLeft className="h-4 w-4" />
           Back to course
         </button>
+        <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500">
+          <Lock className="mr-1.5 h-3.5 w-3.5" />
+          Lock
+        </Button>
       </div>
 
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
@@ -98,7 +186,7 @@ export function InstructorDashboard({ onBack }: Props) {
           <p className="mt-1 text-sm text-slate-500">Track student progress across the AI-Powered Project Management course.</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={load} disabled={loading}>
+          <Button variant="outline" size="sm" onClick={() => loadStudents(keyInput)} disabled={loading}>
             <RefreshCw className={`mr-1.5 h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </Button>
