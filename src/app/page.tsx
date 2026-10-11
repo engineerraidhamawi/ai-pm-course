@@ -1,6 +1,5 @@
 "use client";
 
-import { Certificate } from "@/components/course/certificate";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -17,11 +16,12 @@ import { Progress } from "@/components/ui/progress";
 import {
   Sparkles, Clock, BookOpen, CheckCircle2, Circle, PlayCircle,
   Trophy, BarChart3, LogOut, Layers, Target, Wrench, TrendingUp,
-  ArrowRight, Star,
+  ArrowRight, Star, ChevronLeft,
 } from "lucide-react";
 import { EnrollmentDialog } from "@/components/course/enrollment-dialog";
 import { ModuleReader } from "@/components/course/module-reader";
 import { InstructorDashboard } from "@/components/course/instructor-dashboard";
+import { Certificate } from "@/components/course/certificate";
 
 type View = "catalog" | "reader" | "dashboard" | "certificate";
 
@@ -97,6 +97,7 @@ export default function Home() {
       </div>
     );
   }
+
   if (view === "certificate" && displayStudent) {
     return (
       <div className="min-h-screen bg-slate-50">
@@ -119,6 +120,7 @@ export default function Home() {
       </div>
     );
   }
+
   if (view === "reader" && activeModule) {
     return (
       <div className="min-h-screen bg-slate-50">
@@ -237,16 +239,17 @@ export default function Home() {
                 <span className="font-bold text-white">{completedCount}/{totalModules} · {overallPct}%</span>
               </div>
               <Progress value={overallPct} className="h-2 bg-white/20" />
-                            {overallPct === 100 && (
-                <button
-                  onClick={() => setView("certificate")}
-                  className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white shadow transition hover:bg-amber-600"
-                >
-                  <Trophy className="h-3.5 w-3.5" />
-                  View your certificate
-                </button>
-              )}
-                <p className="mt-2 text-xs font-medium text-amber-200">🎓 Congratulations — you've completed the entire course!</p>
+              {overallPct === 100 && (
+                <>
+                  <p className="mt-2 text-xs font-medium text-amber-200">🎓 Congratulations — you've completed the entire course!</p>
+                  <button
+                    onClick={() => setView("certificate")}
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white shadow transition hover:bg-amber-600"
+                  >
+                    <Trophy className="h-3.5 w-3.5" />
+                    View your certificate
+                  </button>
+                </>
               )}
             </div>
           )}
