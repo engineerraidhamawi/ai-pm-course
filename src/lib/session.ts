@@ -141,3 +141,14 @@ export async function fetchDashboard(instructorKey?: string): Promise<DashboardS
   const data = await res.json();
   return data.students as DashboardStudent[];
 }
+export async function updateLastVisitedModule(studentId: string, moduleId: string) {
+  try {
+    await fetch("/api/students", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ studentId, lastVisitedModule: moduleId }),
+    });
+  } catch {
+    // silent — don't break the UX if this fails
+  }
+}

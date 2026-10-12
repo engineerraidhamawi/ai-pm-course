@@ -32,6 +32,8 @@ export default function Home() {
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [enrollOpen, setEnrollOpen] = useState(false);
 
+  const [lastVisitedModule, setLastVisitedModule] = useState<Module | null>(null);
+
   useEffect(() => {
     if (!hydrated || !student) return;
     let cancelled = false;
@@ -39,10 +41,17 @@ export default function Home() {
       try {
         const map = await fetchStudentProgress(student.id);
         if (!cancelled) useSession.getState().setProgress(map);
+        // Fetch last visited module
+        const res = await fetch(`/api/students?email=${encodeURIComponent(student.email)}`);
+        const data = await res.json();
+        if (!cancelled && data.student?.lastVisitedModule) {
+          const mod = ALL_MODULES_FOR_LOOKUP.find((m) => m.id === data.student.lastVisitedModule);
+          if (mod) setLastVisitedModule(mod);
+        }
       } catch {}
     })();
     return () => { cancelled = true; };
-  }, [hydrated, student]);
+  }, [hydrated, student, ALL_MODULES_FOR_LOOKUP]);
 
   const totalModules = MODULES.length;
   const completedCount = useMemo(
@@ -239,7 +248,7 @@ export default function Home() {
                 <span className="font-bold text-white">{completedCount}/{totalModules} · {overallPct}%</span>
               </div>
               <Progress value={overallPct} className="h-2 bg-white/20" />
-              {overallPct === 100 && (
+              {overallPct === 100 ? (
                 <>
                   <p className="mt-2 text-xs font-medium text-amber-200">🎓 Congratulations — you've completed the entire course!</p>
                   <button
@@ -250,7 +259,15 @@ export default function Home() {
                     View your certificate
                   </button>
                 </>
-              )}
+              ) : lastVisitedModule ? (
+                <button
+                  onClick={() => openModule(lastVisitedModule)}
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-indigo-700 shadow transition hover:bg-indigo-50"
+                >
+                  <PlayCircle className="h-3.5 w-3.5" />
+                  Continue where you left off — Module {lastVisitedModule.number}
+                </button>
+              ) : null}
             </div>
           )}
         </div>

@@ -46,3 +46,29 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+
+// PATCH — update lastVisitedModule
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const studentId = String(body?.studentId ?? "").trim();
+    const lastVisitedModule = String(body?.lastVisitedModule ?? "").trim();
+
+    if (!studentId || !lastVisitedModule) {
+      return NextResponse.json(
+        { error: "studentId and lastVisitedModule are required" },
+        { status: 400 },
+      );
+    }
+
+    const student = await db.student.update({
+      where: { id: studentId },
+      data: { lastVisitedModule },
+    });
+
+    return NextResponse.json({ student });
+  } catch (e) {
+    console.error("[PATCH /api/students] error", e);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}

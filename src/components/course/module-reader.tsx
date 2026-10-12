@@ -11,7 +11,7 @@ import {
   ChevronLeft, CheckCircle2, Circle, Clock, ArrowRight, RotateCcw,
   GraduationCap, HelpCircle, Lightbulb, Sparkles, Lock,
 } from "lucide-react";
-import { useSession, ProgressStatus } from "@/lib/session";
+import { useSession, ProgressStatus, updateLastVisitedModule } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -34,6 +34,9 @@ export function ModuleReader({
 
   useEffect(() => {
     if (!student) return;
+    // Save last visited module
+    updateLastVisitedModule(student.id, module.id);
+    // Mark as in_progress if not started
     if (status === "not_started") {
       upsertProgress(module.id, { status: "in_progress", percent: 25 });
       fetch("/api/progress", {
