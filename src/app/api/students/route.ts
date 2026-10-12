@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,6 +20,12 @@ export async function POST(req: NextRequest) {
       update: { name },
       create: { name, email },
     });
+
+    // Send welcome email (only if this is a new student — check createdAt is recent)
+    const isNewStudent = Date.now() - new Date(student.createdAt).getTime() < 60000; // within 1 minute
+    if (isNewStudent) {
+      await sendWelcomeEmail(name, email);
+    }
 
     return NextResponse.json({ student });
   } catch (e) {
@@ -47,7 +54,6 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// PATCH — update lastVisitedModule
 export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json();

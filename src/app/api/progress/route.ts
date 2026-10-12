@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { sendCompletionEmail } from "@/lib/email";
 
 type Status = "not_started" | "in_progress" | "completed";
 
@@ -62,6 +63,16 @@ export async function PUT(req: NextRequest) {
         lastVisited: new Date(),
       },
     });
+
+    // Check if this completion marks the final module — send congrats email
+    if (status === "completed") {
+      const allProgress = await db.progress.findMany({ where: { studentId } });
+      const completedCount = allProgress.filter((p) => p.status === "completed").length;
+      // 18 modules total — if this is the 18th completion, send email
+      if (completedCount === 18) {
+        await sendCompletionEmail(student.name, student.email);
+      }
+    }
 
     return NextResponse.json({ progress });
   } catch (e) {
