@@ -31,8 +31,10 @@ export default function Home() {
   const [view, setView] = useState<View>("catalog");
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [enrollOpen, setEnrollOpen] = useState(false);
-
   const [lastVisitedModule, setLastVisitedModule] = useState<Module | null>(null);
+
+  // Define lookup array BEFORE any useEffect that uses it
+  const ALL_MODULES_FOR_LOOKUP = useMemo(() => [INTRODUCTION, ...MODULES], []);
 
   const totalModules = MODULES.length;
   const completedCount = useMemo(
@@ -43,10 +45,6 @@ export default function Home() {
 
   const displayStudent = hydrated ? student : null;
   const displayProgress = hydrated ? progress : {};
-
-  // Define ALL_MODULES_FOR_LOOKUP BEFORE the useEffect that uses it
-  const ALL_MODULES_FOR_LOOKUP = useMemo(() => [INTRODUCTION, ...MODULES], []);
-  const [lastVisitedModule, setLastVisitedModule] = useState<Module | null>(null);
 
   useEffect(() => {
     if (!hydrated || !student) return;
@@ -66,6 +64,7 @@ export default function Home() {
     })();
     return () => { cancelled = true; };
   }, [hydrated, student, ALL_MODULES_FOR_LOOKUP]);
+
   const activeModule = useMemo(
     () => ALL_MODULES_FOR_LOOKUP.find((m) => m.id === activeModuleId) ?? null,
     [activeModuleId, ALL_MODULES_FOR_LOOKUP],
