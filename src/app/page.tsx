@@ -22,6 +22,7 @@ import { EnrollmentDialog } from "@/components/course/enrollment-dialog";
 import { ModuleReader } from "@/components/course/module-reader";
 import { InstructorDashboard } from "@/components/course/instructor-dashboard";
 import { Certificate } from "@/components/course/certificate";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type View = "catalog" | "reader" | "dashboard" | "certificate";
 
@@ -166,6 +167,7 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={() => setView("dashboard")} className="text-slate-600">
               <BarChart3 className="mr-1.5 h-4 w-4" />
               <span className="hidden sm:inline">Instructor</span> Dashboard
