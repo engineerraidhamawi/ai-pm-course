@@ -34,6 +34,20 @@ export default function Home() {
 
   const [lastVisitedModule, setLastVisitedModule] = useState<Module | null>(null);
 
+  const totalModules = MODULES.length;
+  const completedCount = useMemo(
+    () => Object.values(progress).filter((p) => p.status === "completed").length,
+    [progress],
+  );
+  const overallPct = Math.round((completedCount / totalModules) * 100);
+
+  const displayStudent = hydrated ? student : null;
+  const displayProgress = hydrated ? progress : {};
+
+  // Define ALL_MODULES_FOR_LOOKUP BEFORE the useEffect that uses it
+  const ALL_MODULES_FOR_LOOKUP = useMemo(() => [INTRODUCTION, ...MODULES], []);
+  const [lastVisitedModule, setLastVisitedModule] = useState<Module | null>(null);
+
   useEffect(() => {
     if (!hydrated || !student) return;
     let cancelled = false;
@@ -52,18 +66,6 @@ export default function Home() {
     })();
     return () => { cancelled = true; };
   }, [hydrated, student, ALL_MODULES_FOR_LOOKUP]);
-
-  const totalModules = MODULES.length;
-  const completedCount = useMemo(
-    () => Object.values(progress).filter((p) => p.status === "completed").length,
-    [progress],
-  );
-  const overallPct = Math.round((completedCount / totalModules) * 100);
-
-  const displayStudent = hydrated ? student : null;
-  const displayProgress = hydrated ? progress : {};
-
-  const ALL_MODULES_FOR_LOOKUP = useMemo(() => [INTRODUCTION, ...MODULES], []);
   const activeModule = useMemo(
     () => ALL_MODULES_FOR_LOOKUP.find((m) => m.id === activeModuleId) ?? null,
     [activeModuleId, ALL_MODULES_FOR_LOOKUP],
