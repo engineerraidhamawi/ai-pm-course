@@ -152,3 +152,42 @@ export async function updateLastVisitedModule(studentId: string, moduleId: strin
     // silent — don't break the UX if this fails
   }
 }
+
+// Bulk add students — returns {added, updated, failed, errors}
+export async function bulkAddStudents(students: Array<{ name: string; email: string }>, instructorKey?: string) {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (instructorKey) headers["Authorization"] = `Bearer ${instructorKey}`;
+  const res = await fetch("/api/students", {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ students }),
+  });
+  if (!res.ok) throw new Error("Failed to bulk add students");
+  const data = await res.json();
+  return data.results as { added: number; updated: number; failed: number; errors: string[] };
+}
+
+// Delete a single student
+export async function deleteStudent(studentId: string, instructorKey?: string) {
+  const headers: Record<string, string> = {};
+  if (instructorKey) headers["Authorization"] = `Bearer ${instructorKey}`;
+  const res = await fetch(`/api/students?studentId=${encodeURIComponent(studentId)}`, {
+    method: "DELETE",
+    headers,
+  });
+  if (!res.ok) throw new Error("Failed to delete student");
+  return res.json();
+}
+
+// Bulk delete students
+export async function bulkDeleteStudents(studentIds: string[], instructorKey?: string) {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (instructorKey) headers["Authorization"] = `Bearer ${instructorKey}`;
+  const res = await fetch("/api/students", {
+    method: "DELETE",
+    headers,
+    body: JSON.stringify({ studentIds }),
+  });
+  if (!res.ok) throw new Error("Failed to bulk delete students");
+  return res.json();
+}
