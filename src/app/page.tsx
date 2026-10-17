@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   COURSE_META, LEARNING_OUTCOMES, PARTS, MODULES, INTRODUCTION,
-  RESOURCES, FINAL_TAKEAWAYS, Module,
+  RESOURCES, FINAL_TAKEAWAYS, Module, getModuleReadingTime,
 } from "@/lib/course-data";
 import {
   useSession, useHydrated, fetchStudentProgress, ProgressStatus,
@@ -13,10 +13,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
 import {
   Sparkles, Clock, BookOpen, CheckCircle2, Circle, PlayCircle,
   Trophy, BarChart3, LogOut, Layers, Target, Wrench, TrendingUp,
-  ArrowRight, Star, ChevronLeft,
+  ArrowRight, Star, ChevronLeft, Search,
 } from "lucide-react";
 import { EnrollmentDialog } from "@/components/course/enrollment-dialog";
 import { ModuleReader } from "@/components/course/module-reader";
@@ -33,6 +34,8 @@ export default function Home() {
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [enrollOpen, setEnrollOpen] = useState(false);
   const [lastVisitedModule, setLastVisitedModule] = useState<Module | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState<"all" | "not_started" | "in_progress" | "completed">("all");
 
   // Define lookup array BEFORE any useEffect that uses it
   const ALL_MODULES_FOR_LOOKUP = useMemo(() => [INTRODUCTION, ...MODULES], []);
@@ -369,8 +372,53 @@ export default function Home() {
           title={`${totalModules} modules across ${PARTS.length} parts`}
           sub="Click any module to open the full lesson, prompts, exercises, and teaching notes."
         />
+
+        {/* Search & Filter Bar */}
+        <div className="mb-8 space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Input
+              type="text"
+              placeholder="Search modules (e.g., RACI, WBS, status report)..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <FilterButton active={filterStatus === "all"} onClick={() => setFilterStatus("all")}>All</FilterButton>
+            <FilterButton active={filterStatus === "not_started"} onClick={() => setFilterStatus("not_started")}>Not Started</FilterButton>
+            <FilterButton active={filterStatus === "in_progress"} onClick={() => setFilterStatus("in_progress")}>In Progress</FilterButton>
+            <FilterButton active={filterStatus === "completed"} onClick={() => setFilterStatus("completed")}>Completed</FilterButton>
+          </div>
+        </div>
+
         {PARTS.map((part) => {
-          const partModules = MODULES.filter((m) => m.partNumber === part.number);
+          let partModules = MODULES.filter((m) => m.partNumber === part.number);
+
+          // Apply search filter
+          if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase();
+            partModules = partModules.filter((m) =>
+              m.title.toLowerCase().includes(q) ||
+              m.summary.toLowerCase().includes(q) ||
+              m.part.toLowerCase().includes(q) ||
+              m.content.some(c => {
+                if (c.type === "paragraph" || c.type === "heading") return c.text.toLowerCase().includes(q);
+                if (c.type === "prompt") return c.title.toLowerCase().includes(q) || c.code.toLowerCase().includes(q);
+                return false;
+              })
+            );
+          }
+
+          // Apply status filter
+          if (filterStatus !== "all") {
+            partModules = partModules.filter((m) => {
+              const status = displayProgress[m.id]?.status ?? "not_started";
+              return status === filterStatus;
+            });
+          }
+
           if (partModules.length === 0) return null;
           const partCompleted = partModules.filter((m) => displayProgress[m.id]?.status === "completed").length;
           return (
@@ -524,6 +572,10 @@ function ModuleCard({
               {m.duration}
             </span>
           )}
+          <span className="inline-flex items-center gap-1">
+            <BookOpen className="h-3 w-3" />
+            {getModuleReadingTime(m)} min read
+          </span>
           {studentPresent && status !== "not_started" && (
             <div className="flex items-center gap-1.5">
               <Progress value={pct} className="h-1 w-16" />
@@ -587,5 +639,20 @@ function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+function FilterButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
+        active
+          ? "bg-indigo-600 text-white"
+          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
