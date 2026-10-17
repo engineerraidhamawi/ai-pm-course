@@ -8,14 +8,15 @@ datasource db {
 }
 
 model Student {
-  id                String   @id @default(cuid())
+  id                String     @id @default(cuid())
   name              String
-  email             String   @unique
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  email             String     @unique
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
   lastVisitedModule String?
   progress          Progress[]
   notes             Note[]
+  feedback          Feedback[]
 }
 
 model Progress {
@@ -39,6 +40,20 @@ model Note {
   studentId String
   moduleId  String
   content   String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, moduleId])
+  @@index([studentId])
+}
+model Feedback {
+  id        String   @id @default(cuid())
+  studentId String
+  moduleId  String
+  rating    Int
+  comment   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

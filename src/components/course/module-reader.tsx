@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { Module } from "@/lib/course-data";
 import { ContentRenderer } from "./content-renderer";
 import { Quiz } from "./quiz";
+import { ModuleFeedback } from "./module-feedback";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -339,6 +340,11 @@ export function ModuleReader({
                 )}
               </div>
             </div>
+          )}
+
+          {/* Module Feedback */}
+          {!isIntroduction && (
+            <ModuleFeedback moduleId={module.id} onToast={onToast} />
           )}
 
           {!isIntroduction && (
