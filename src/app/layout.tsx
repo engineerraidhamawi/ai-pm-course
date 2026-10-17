@@ -26,22 +26,10 @@ export const metadata: Metadata = {
     icon: "/course-logo.png",
     apple: "/course-logo.png",
   },
-  openGraph: {
-    title: "AI-Powered Project Management",
-    description: "From planning to reporting — learn to use AI in your PM workflows. 18 modules, quizzes, certificate.",
-    type: "website",
-    images: [
-      {
-        url: "/course-logo.png",
-        alt: "AI-Powered Project Management Course",
-      },
-    ],
-  },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "AI-Powered Project Management",
     description: "From planning to reporting — learn to use AI in your PM workflows.",
-    images: ["/course-logo.png"],
   },
 };
 
