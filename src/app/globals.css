@@ -57,25 +57,10 @@
     color: var(--foreground);
   }
 }
-/* Print styles for certificate */
-@media print {
-  body * {
-    visibility: hidden;
-  }
-  #certificate-paper, #certificate-paper * {
-    visibility: visible;
-  }
-  #certificate-paper {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    border: 4px double #f59e0b !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-}
-/* Dark mode */
+
+/* =========================================
+   DARK MODE
+========================================= */
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -97,7 +82,6 @@
   --ring: oklch(0.556 0 0);
 }
 
-/* Dark mode overrides for course-specific elements */
 .dark body {
   background-color: #0f172a;
   color: #e2e8f0;
@@ -143,11 +127,16 @@
 .dark .bg-slate-900 { background-color: #020617 !important; }
 .dark .text-white { color: #f8fafc !important; }
 
-/* Print styles for certificate */
+/* =========================================
+   PRINT STYLES (Modules & Certificate)
+========================================= */
 @media print {
-  body * {
-    visibility: hidden;
+  /* 1. Hide elements marked with .no-print (buttons, nav, quizzes) */
+  .no-print {
+    display: none !important;
   }
+
+  /* 2. Certificate specific styles */
   #certificate-paper, #certificate-paper * {
     visibility: visible;
   }
@@ -159,5 +148,43 @@
     border: 4px double #f59e0b !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+  
+  /* Hide everything else when printing the certificate */
+  body:has(#certificate-paper) > *:not(#certificate-paper) {
+    visibility: hidden;
+  }
+
+  /* 3. Module specific styles */
+  /* Reset backgrounds and colors for print */
+  body, .bg-slate-50, .bg-white {
+    background: white !important;
+  }
+  
+  /* Ensure text is black for printing */
+  .text-slate-900, .text-slate-800, .text-slate-700, .text-slate-600 {
+    color: black !important;
+  }
+  
+  /* Remove shadows and rounded corners for cleaner print */
+  .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl {
+    box-shadow: none !important;
+  }
+  .rounded-2xl, .rounded-xl, .rounded-lg {
+    border-radius: 0 !important;
+  }
+  
+  /* Ensure prompt blocks still have borders so they look like boxes */
+  .prompt {
+    border: 1px solid #ccc !important;
+    background: #f9f9f9 !important;
+  }
+  
+  /* Page breaks */
+  h1, h2, h3, h4 {
+    page-break-after: avoid;
+  }
+  table, pre, .prompt {
+    page-break-inside: avoid;
   }
 }
