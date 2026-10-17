@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, RefreshCw, Search, Download, Upload, Trash2, Trophy, Lock, X, CheckCircle2, AlertCircle } from "lucide-react";
 import { MODULES } from "@/lib/course-data";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
 type Props = { onBack: () => void };
 
@@ -19,19 +20,17 @@ export function InstructorDashboard({ onBack }: Props) {
   const [authError, setAuthError] = useState<string | null>(null);
 
   const [students, setStudents] = useState<DashboardStudent[]>([]);
+  const [feedbackData, setFeedbackData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  // Bulk add modal state
   const [bulkAddOpen, setBulkAddOpen] = useState(false);
   const [bulkAddText, setBulkAddText] = useState("");
   const [bulkAddResult, setBulkAddResult] = useState<{ added: number; updated: number; failed: number; errors: string[] } | null>(null);
   const [bulkAddLoading, setBulkAddLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Toast/notification state
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" | "info" } | null>(null);
 
   function showToast(msg: string, type: "success" | "error" | "info" = "info") {
@@ -59,6 +58,11 @@ export function InstructorDashboard({ onBack }: Props) {
       setStudents(data);
       setAuthed(true);
       sessionStorage.setItem("instructor-key", k);
+      
+      // Fetch feedback data
+      const feedbackRes = await fetch("/api/feedback");
+      const feedbackJson = await feedbackRes.json();
+      setFeedbackData(feedbackJson.feedback || []);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Failed to load";
       if (msg.includes("Unauthorized") || msg.includes("Failed to fetch dashboard")) {
@@ -87,8 +91,6 @@ export function InstructorDashboard({ onBack }: Props) {
     setSelectedIds(new Set());
   }
 
-  // ===== Bulk Add =====
-
   function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -103,20 +105,15 @@ export function InstructorDashboard({ onBack }: Props) {
   function parseStudentsFromText(text: string): Array<{ name: string; email: string }> {
     const lines = text.split(/\r?\n/).filter((l) => l.trim());
     const students: Array<{ name: string; email: string }> = [];
-
     for (const line of lines) {
-      // Try CSV format: name,email OR email,name
-      // Also handle tab-separated and comma-separated
       const parts = line.split(/[,\t]/).map((p) => p.trim().replace(/^"|"$/g, ""));
       if (parts.length >= 2) {
-        // Detect which is email and which is name
         const emailPart = parts.find((p) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p));
         const namePart = parts.find((p) => p !== emailPart);
         if (emailPart && namePart) {
           students.push({ name: namePart, email: emailPart.toLowerCase() });
         }
       } else if (parts.length === 1) {
-        // Single column — assume it's an email, use part before @ as name
         const email = parts[0];
         if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
           const name = email.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -124,7 +121,6 @@ export function InstructorDashboard({ onBack }: Props) {
         }
       }
     }
-
     return students;
   }
 
@@ -134,13 +130,11 @@ export function InstructorDashboard({ onBack }: Props) {
       showToast("No valid students found. Use format: Name,Email (one per line)", "error");
       return;
     }
-
     setBulkAddLoading(true);
     try {
       const result = await bulkAddStudents(parsed, keyInput);
       setBulkAddResult(result);
       showToast(`Added ${result.added}, updated ${result.updated}, failed ${result.failed}`, "success");
-      // Reload students
       await loadStudents();
     } catch (e) {
       showToast("Failed to add students", "error");
@@ -148,8 +142,6 @@ export function InstructorDashboard({ onBack }: Props) {
       setBulkAddLoading(false);
     }
   }
-
-  // ===== Delete =====
 
   async function handleDeleteSingle(studentId: string, studentName: string) {
     if (!confirm(`Delete ${studentName}? This will remove all their progress.`)) return;
@@ -168,7 +160,6 @@ export function InstructorDashboard({ onBack }: Props) {
       return;
     }
     if (!confirm(`Delete ${selectedIds.size} student(s)? This will remove all their progress.`)) return;
-
     try {
       await bulkDeleteStudents(Array.from(selectedIds), keyInput);
       setStudents((prev) => prev.filter((s) => !selectedIds.has(s.id)));
@@ -178,8 +169,6 @@ export function InstructorDashboard({ onBack }: Props) {
       showToast("Failed to delete students", "error");
     }
   }
-
-  // ===== Selection =====
 
   function toggleSelect(id: string) {
     setSelectedIds((prev) => {
@@ -198,17 +187,25 @@ export function InstructorDashboard({ onBack }: Props) {
     }
   }
 
-  // ===== Render =====
-
   const totalModules = MODULES.length;
 
   const stats = (() => {
     let totalCompletions = 0;
+    let startedCount = 0;
+    let completedCount = 0;
+    let notStartedCount = 0;
+
     for (const s of students) {
-      for (const p of s.progress) {
-        if (p.status === "completed") totalCompletions++;
-      }
+      const completed = s.progress.filter((p) => p.status === "completed").length;
+      const inProgress = s.progress.filter((p) => p.status === "in_progress").length;
+      
+      totalCompletions += completed;
+      
+      if (completed === totalModules) completedCount++;
+      else if (completed > 0 || inProgress > 0) startedCount++;
+      else notStartedCount++;
     }
+
     return {
       totalStudents: students.length,
       totalCompletions,
@@ -218,8 +215,41 @@ export function InstructorDashboard({ onBack }: Props) {
             return sum + (completed / totalModules) * 100;
           }, 0) / students.length))
         : 0,
+      completedCount,
+      startedCount,
+      notStartedCount,
     };
   })();
+
+  // Chart data: Module completion counts
+  const moduleCompletionData = MODULES.map((m) => {
+    const completed = students.filter((s) => s.progress.some((p) => p.moduleId === m.id && p.status === "completed")).length;
+    const inProgress = students.filter((s) => s.progress.some((p) => p.moduleId === m.id && p.status === "in_progress")).length;
+    return {
+      name: `M${m.number}`,
+      completed,
+      inProgress,
+    };
+  });
+
+  // Chart data: Student status distribution
+  const studentStatusData = [
+    { name: "Not Started", value: stats.notStartedCount, color: "#e2e8f0" },
+    { name: "In Progress", value: stats.startedCount, color: "#6366f1" },
+    { name: "Completed", value: stats.completedCount, color: "#10b981" },
+  ];
+
+  // Chart data: Average rating per module
+  const ratingData = MODULES.map((m) => {
+    const moduleFeedback = feedbackData.filter((f: any) => f.moduleId === m.id);
+    const avgRating = moduleFeedback.length > 0
+      ? moduleFeedback.reduce((sum: number, f: any) => sum + f.rating, 0) / moduleFeedback.length
+      : 0;
+    return {
+      name: `M${m.number}`,
+      rating: parseFloat(avgRating.toFixed(1)),
+    };
+  }).filter(m => m.rating > 0);
 
   const filtered = students.filter((s) => {
     if (!query.trim()) return true;
@@ -247,18 +277,13 @@ export function InstructorDashboard({ onBack }: Props) {
     URL.revokeObjectURL(url);
   }
 
-  // ===== Login screen =====
   if (!authed) {
     return (
       <div className="mx-auto max-w-md px-4 pb-24 pt-20 sm:px-6">
-        <button
-          onClick={onBack}
-          className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-indigo-600"
-        >
+        <button onClick={onBack} className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-indigo-600">
           <ArrowLeft className="h-4 w-4" />
           Back to course
         </button>
-
         <Card className="border-slate-200 shadow-md">
           <CardHeader className="text-center">
             <div className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-sky-500 text-white shadow">
@@ -267,20 +292,11 @@ export function InstructorDashboard({ onBack }: Props) {
             <CardTitle className="text-xl">Instructor Access</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="mb-4 text-center text-sm text-slate-500">
-              Enter the instructor password to manage students.
-            </p>
+            <p className="mb-4 text-center text-sm text-slate-500">Enter the instructor password to manage students.</p>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="instructor-key">Password</Label>
-                <Input
-                  id="instructor-key"
-                  type="password"
-                  value={keyInput}
-                  onChange={(e) => setKeyInput(e.target.value)}
-                  placeholder="Enter instructor password"
-                  autoFocus
-                />
+                <Input id="instructor-key" type="password" value={keyInput} onChange={(e) => setKeyInput(e.target.value)} placeholder="Enter instructor password" autoFocus />
               </div>
               {authError && <p className="text-sm text-red-600">{authError}</p>}
               <Button type="submit" className="w-full bg-indigo-600 text-white hover:bg-indigo-700" disabled={loading}>
@@ -293,32 +309,21 @@ export function InstructorDashboard({ onBack }: Props) {
     );
   }
 
-  // ===== Dashboard =====
   return (
     <div className="mx-auto max-w-6xl px-4 pb-24 pt-6 sm:px-6">
-      {/* Toast notification */}
       {toast && (
-        <div className={`fixed left-1/2 top-6 z-50 -translate-x-1/2 rounded-lg px-4 py-3 shadow-lg ${
-          toast.type === "success" ? "bg-emerald-500 text-white" :
-          toast.type === "error" ? "bg-red-500 text-white" :
-          "bg-slate-800 text-white"
-        }`}>
+        <div className={`fixed left-1/2 top-6 z-50 -translate-x-1/2 rounded-lg px-4 py-3 shadow-lg ${toast.type === "success" ? "bg-emerald-500 text-white" : toast.type === "error" ? "bg-red-500 text-white" : "bg-slate-800 text-white"}`}>
           <div className="flex items-center gap-2">
             {toast.type === "success" && <CheckCircle2 className="h-4 w-4" />}
             {toast.type === "error" && <AlertCircle className="h-4 w-4" />}
             <span className="text-sm font-medium">{toast.msg}</span>
-            <button onClick={() => setToast(null)} className="ml-2 opacity-70 hover:opacity-100">
-              <X className="h-4 w-4" />
-            </button>
+            <button onClick={() => setToast(null)} className="ml-2 opacity-70 hover:opacity-100"><X className="h-4 w-4" /></button>
           </div>
         </div>
       )}
 
       <div className="mb-4 flex items-center justify-between">
-        <button
-          onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-indigo-600"
-        >
+        <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-indigo-600">
           <ArrowLeft className="h-4 w-4" />
           Back to course
         </button>
@@ -338,12 +343,7 @@ export function InstructorDashboard({ onBack }: Props) {
             <Upload className="mr-1.5 h-3.5 w-3.5" />
             Bulk Add Students
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleBulkDelete}
-            disabled={selectedIds.size === 0}
-          >
+          <Button variant="outline" size="sm" onClick={handleBulkDelete} disabled={selectedIds.size === 0}>
             <Trash2 className="mr-1.5 h-3.5 w-3.5" />
             Delete Selected ({selectedIds.size})
           </Button>
@@ -358,8 +358,8 @@ export function InstructorDashboard({ onBack }: Props) {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      {/* Stats Cards */}
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-semibold uppercase tracking-wider text-slate-500">Enrolled Students</CardTitle>
@@ -384,20 +384,96 @@ export function InstructorDashboard({ onBack }: Props) {
             <div className="text-3xl font-bold text-emerald-600">{stats.avgProgress}%</div>
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-slate-500">Certified</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-amber-600">{stats.completedCount}</div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Charts Section */}
+      <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Student Status Distribution */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Student Status Distribution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {stats.totalStudents === 0 ? (
+              <p className="py-8 text-center text-sm text-slate-400">No students enrolled yet.</p>
+            ) : (
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie data={studentStatusData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                    {studentStatusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Module Completion Bar Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Module Completion</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {stats.totalStudents === 0 ? (
+              <p className="py-8 text-center text-sm text-slate-400">No data to display yet.</p>
+            ) : (
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={moduleCompletionData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" tickLine={false} axisLine={false} fontSize={12} />
+                  <YAxis tickLine={false} axisLine={false} fontSize={12} allowDecimals={false} />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="completed" name="Completed" fill="#10b981" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="inProgress" name="In Progress" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Module Ratings Chart */}
+      {ratingData.length > 0 && (
+        <div className="mb-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Module Average Ratings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={ratingData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" tickLine={false} axisLine={false} fontSize={12} />
+                  <YAxis tickLine={false} axisLine={false} fontSize={12} domain={[0, 5]} />
+                  <Tooltip />
+                  <Bar dataKey="rating" name="Avg Rating" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Search */}
       <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by name or email…"
-          className="pl-9"
-        />
+        <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name or email…" className="pl-9" />
       </div>
 
-      {/* Students table */}
+      {/* Students Table */}
       <Card>
         <CardContent className="p-0">
           {loading ? (
@@ -406,9 +482,7 @@ export function InstructorDashboard({ onBack }: Props) {
             <div className="p-8 text-center text-sm text-red-600">{error}</div>
           ) : filtered.length === 0 ? (
             <div className="p-8 text-center text-sm text-slate-500">
-              {students.length === 0
-                ? "No students enrolled yet. Click \"Bulk Add Students\" to upload a CSV!"
-                : "No students match your search."}
+              {students.length === 0 ? "No students enrolled yet. Click \"Bulk Add Students\" to upload a CSV!" : "No students match your search."}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -416,12 +490,7 @@ export function InstructorDashboard({ onBack }: Props) {
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50">
                     <th className="px-4 py-3 text-left">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.size === filtered.length && filtered.length > 0}
-                        onChange={toggleSelectAll}
-                        className="h-4 w-4 cursor-pointer rounded border-slate-300"
-                      />
+                      <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} className="h-4 w-4 cursor-pointer rounded border-slate-300" />
                     </th>
                     <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-600">Student</th>
                     <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-600">Joined</th>
@@ -440,14 +509,7 @@ export function InstructorDashboard({ onBack }: Props) {
                     const lastActive = lastVisits[0];
                     return (
                       <tr key={s.id} className={`border-b border-slate-100 last:border-0 hover:bg-slate-50/40 ${selectedIds.has(s.id) ? "bg-indigo-50/40" : ""}`}>
-                        <td className="px-4 py-3">
-                          <input
-                            type="checkbox"
-                            checked={selectedIds.has(s.id)}
-                            onChange={() => toggleSelect(s.id)}
-                            className="h-4 w-4 cursor-pointer rounded border-slate-300"
-                          />
-                        </td>
+                        <td className="px-4 py-3"><input type="checkbox" checked={selectedIds.has(s.id)} onChange={() => toggleSelect(s.id)} className="h-4 w-4 cursor-pointer rounded border-slate-300" /></td>
                         <td className="px-4 py-3">
                           <div className="font-semibold text-slate-900">{s.name}</div>
                           <div className="text-xs text-slate-500">{s.email}</div>
@@ -464,10 +526,7 @@ export function InstructorDashboard({ onBack }: Props) {
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-1">
                             {pct === 100 ? (
-                              <Badge className="gap-1 bg-amber-100 text-amber-800 hover:bg-amber-100">
-                                <Trophy className="h-3 w-3" />
-                                Certified
-                              </Badge>
+                              <Badge className="gap-1 bg-amber-100 text-amber-800 hover:bg-amber-100"><Trophy className="h-3 w-3" /> Certified</Badge>
                             ) : completed > 0 ? (
                               <Badge variant="default" className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">{completed} done</Badge>
                             ) : inProgress > 0 ? (
@@ -478,11 +537,7 @@ export function InstructorDashboard({ onBack }: Props) {
                           </div>
                         </td>
                         <td className="px-4 py-3">
-                          <button
-                            onClick={() => handleDeleteSingle(s.id, s.name)}
-                            className="text-slate-400 transition hover:text-red-600"
-                            title="Delete student"
-                          >
+                          <button onClick={() => handleDeleteSingle(s.id, s.name)} className="text-slate-400 transition hover:text-red-600" title="Delete student">
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </td>
@@ -496,108 +551,39 @@ export function InstructorDashboard({ onBack }: Props) {
         </CardContent>
       </Card>
 
-      {/* ===== Bulk Add Modal ===== */}
+      {/* Bulk Add Modal */}
       {bulkAddOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-xl font-bold text-slate-900">Bulk Add Students</h2>
-              <button
-                onClick={() => { setBulkAddOpen(false); setBulkAddResult(null); }}
-                className="text-slate-400 hover:text-slate-600"
-              >
-                <X className="h-5 w-5" />
-              </button>
+              <button onClick={() => { setBulkAddOpen(false); setBulkAddResult(null); }} className="text-slate-400 hover:text-slate-600"><X className="h-5 w-5" /></button>
             </div>
-
-            <p className="mb-4 text-sm text-slate-600">
-              Upload a CSV file or paste student data below. Format: <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">Name,Email</code> (one per line).
-              You can also use tab-separated (from Excel) or just a single column of emails.
-            </p>
-
-            {/* File upload */}
+            <p className="mb-4 text-sm text-slate-600">Upload a CSV file or paste student data below. Format: <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">Name,Email</code> (one per line).</p>
             <div className="mb-4">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv,.txt"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-              >
+              <input ref={fileInputRef} type="file" accept=".csv,.txt" onChange={handleFileUpload} className="hidden" />
+              <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
                 <Upload className="mr-1.5 h-3.5 w-3.5" />
                 Choose CSV File
               </Button>
-              <span className="ml-3 text-xs text-slate-500">
-                Tip: In Excel, go to File → Save As → CSV (Comma delimited)
-              </span>
             </div>
-
-            {/* Text area */}
             <div className="mb-4">
               <Label htmlFor="bulk-text">Or paste student data:</Label>
-              <textarea
-                id="bulk-text"
-                value={bulkAddText}
-                onChange={(e) => setBulkAddText(e.target.value)}
-                placeholder={`Name,Email
-Jane Doe,jane@example.com
-John Smith,john@example.com
-Or just emails:
-student1@gmail.com
-student2@gmail.com`}
-                className="mt-1.5 h-48 w-full rounded-md border border-slate-200 p-3 font-mono text-sm focus:border-indigo-500 focus:outline-none"
-              />
+              <textarea id="bulk-text" value={bulkAddText} onChange={(e) => setBulkAddText(e.target.value)} placeholder={`Name,Email\nJane Doe,jane@example.com`} className="mt-1.5 h-48 w-full rounded-md border border-slate-200 p-3 font-mono text-sm focus:border-indigo-500 focus:outline-none" />
             </div>
-
-            {/* Result */}
             {bulkAddResult && (
               <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
                 <h3 className="mb-2 text-sm font-bold text-slate-900">Results:</h3>
                 <div className="grid grid-cols-3 gap-3 text-center">
-                  <div>
-                    <div className="text-2xl font-bold text-emerald-600">{bulkAddResult.added}</div>
-                    <div className="text-xs text-slate-500">Added</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-indigo-600">{bulkAddResult.updated}</div>
-                    <div className="text-xs text-slate-500">Updated</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-red-600">{bulkAddResult.failed}</div>
-                    <div className="text-xs text-slate-500">Failed</div>
-                  </div>
+                  <div><div className="text-2xl font-bold text-emerald-600">{bulkAddResult.added}</div><div className="text-xs text-slate-500">Added</div></div>
+                  <div><div className="text-2xl font-bold text-indigo-600">{bulkAddResult.updated}</div><div className="text-xs text-slate-500">Updated</div></div>
+                  <div><div className="text-2xl font-bold text-red-600">{bulkAddResult.failed}</div><div className="text-xs text-slate-500">Failed</div></div>
                 </div>
-                {bulkAddResult.errors.length > 0 && (
-                  <div className="mt-3">
-                    <p className="text-xs font-semibold text-red-600">Errors:</p>
-                    <ul className="mt-1 max-h-24 overflow-y-auto text-xs text-red-600">
-                      {bulkAddResult.errors.map((err, i) => (
-                        <li key={i}>{err}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
               </div>
             )}
-
-            {/* Actions */}
             <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => { setBulkAddOpen(false); setBulkAddResult(null); setBulkAddText(""); }}
-              >
-                Close
-              </Button>
-              <Button
-                onClick={handleBulkAdd}
-                disabled={bulkAddLoading || !bulkAddText.trim()}
-                className="bg-indigo-600 text-white hover:bg-indigo-700"
-              >
+              <Button variant="outline" onClick={() => { setBulkAddOpen(false); setBulkAddResult(null); setBulkAddText(""); }}>Close</Button>
+              <Button onClick={handleBulkAdd} disabled={bulkAddLoading || !bulkAddText.trim()} className="bg-indigo-600 text-white hover:bg-indigo-700">
                 {bulkAddLoading ? "Adding…" : "Add Students"}
               </Button>
             </div>
