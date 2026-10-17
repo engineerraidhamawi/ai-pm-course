@@ -1,0 +1,89 @@
+"use client";
+
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowRight, BookOpen, ClipboardCheck, Sparkles, Trophy } from "lucide-react";
+
+export default function LandingPage() {
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+          <div className="flex items-center gap-2">
+            <img
+              src="/course-logo.png"
+              alt="Dr. Raid Hamawi Logo"
+              className="h-10 w-10 rounded-lg object-cover shadow"
+            />
+            <div>
+              <p className="text-sm font-bold leading-tight text-slate-900">Dr. Raid Hamawi</p>
+              <p className="text-[11px] leading-tight text-slate-500">AI & Project Management Academy</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+        <div className="text-center">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-indigo-700">
+            <Sparkles className="h-3 w-3" />
+            Learning Hub
+          </div>
+          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+            Choose Your Learning Path
+          </h1>
+          <p className="mt-4 max-w-2xl mx-auto text-lg text-slate-500">
+            Select a course below to begin your journey.
+          </p>
+        </div>
+
+        <div className="mt-16 grid gap-8 sm:grid-cols-2">
+          {/* Card 1: AI-Powered PM Course */}
+          <Link href="/ai-pm-course" className="block">
+            <Card className="group h-full overflow-hidden border-slate-200 shadow-sm transition hover:border-indigo-300 hover:shadow-lg">
+              <CardHeader className="bg-gradient-to-br from-indigo-600 to-sky-600 p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <BookOpen className="h-10 w-10" />
+                  <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">18 Modules</span>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                <CardTitle className="mb-2 text-xl text-slate-900">AI-Powered Project Management</CardTitle>
+                <p className="text-sm text-slate-600">
+                  Master AI tools (Claude, ChatGPT, Gemini) for charters, WBS, status reports, and more. Includes quizzes, notes, and a certificate.
+                </p>
+                <div className="mt-6 flex items-center text-sm font-semibold text-indigo-600">
+                  Enter Course
+                  <ArrowRight className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          {/* Card 2: PMP Practice Test */}
+          <Link href="/pmp-test" className="block">
+            <Card className="group h-full overflow-hidden border-slate-200 shadow-sm transition hover:border-emerald-300 hover:shadow-lg">
+              <CardHeader className="bg-gradient-to-br from-emerald-600 to-teal-600 p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <ClipboardCheck className="h-10 w-10" />
+                  <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">180 Questions</span>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                <CardTitle className="mb-2 text-xl text-slate-900">PMP Practice Exam</CardTitle>
+                <p className="text-sm text-slate-600">
+                  Test your knowledge with a full 180-question PMP practice exam. Timed session, automatic grading, and detailed results.
+                </p>
+                <div className="mt-6 flex items-center text-sm font-semibold text-emerald-600">
+                  Start Practice Test
+                  <ArrowRight className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+      </main>
+    </div>
+  );
+}
