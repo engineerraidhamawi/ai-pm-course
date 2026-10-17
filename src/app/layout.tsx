@@ -32,18 +32,16 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
+        url: "/course-logo.png",
         alt: "AI-Powered Project Management Course",
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "AI-Powered Project Management",
     description: "From planning to reporting — learn to use AI in your PM workflows.",
-    images: ["/og-image.png"],
+    images: ["/course-logo.png"],
   },
 };
 
