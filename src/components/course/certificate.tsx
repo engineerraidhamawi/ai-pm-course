@@ -1,5 +1,6 @@
 "use client";
 
+import { ShareButtons } from "./share-buttons";
 import { useMemo } from "react";
 import { Module } from "@/lib/course-data";
 import { Student } from "@/lib/session";
@@ -31,11 +32,18 @@ export function Certificate({ student, modules, completedCount, onPrint }: Props
 
   return (
     <div className="mx-auto max-w-5xl px-4 pb-12 pt-6 sm:px-6">
-      <div className="mb-6 text-center">
+      <div className="mb-6 flex flex-col items-center gap-4">
         <Button onClick={onPrint} className="bg-indigo-600 text-white hover:bg-indigo-700">
           <Download className="mr-1.5 h-4 w-4" />
           Download Certificate (PDF)
         </Button>
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Share your achievement</p>
+          <ShareButtons 
+            title={`I just completed the AI-Powered Project Management course and earned my certificate! 🎓`} 
+            url={typeof window !== "undefined" ? window.location.href : ""}
+          />
+        </div>
       </div>
 
       {/* Certificate */}
