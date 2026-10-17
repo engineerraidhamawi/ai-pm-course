@@ -22,10 +22,11 @@ import {
 import { EnrollmentDialog } from "@/components/course/enrollment-dialog";
 import { ModuleReader } from "@/components/course/module-reader";
 import { InstructorDashboard } from "@/components/course/instructor-dashboard";
+import { StudentDashboard } from "@/components/course/student-dashboard";
 import { Certificate } from "@/components/course/certificate";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-type View = "catalog" | "reader" | "dashboard" | "certificate";
+type View = "catalog" | "reader" | "dashboard" | "certificate" | "my-progress";
 
 export default function Home() {
   const hydrated = useHydrated();
@@ -112,6 +113,26 @@ export default function Home() {
     );
   }
 
+  if (view === "my-progress" && displayStudent) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <StudentDashboard
+          student={displayStudent}
+          modules={MODULES}
+          progress={displayProgress}
+          onBack={() => setView("catalog")}
+          onNavigate={(id) => {
+            setActiveModuleId(id);
+            setView("reader");
+            if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "auto" });
+          }}
+          onViewCertificate={() => setView("certificate")}
+        />
+        <Footer />
+      </div>
+    );
+  }
+
   if (view === "certificate" && displayStudent) {
     return (
       <div className="min-h-screen bg-slate-50">
@@ -172,6 +193,12 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
+            {displayStudent && (
+              <Button variant="ghost" size="sm" onClick={() => setView("my-progress")} className="text-slate-600">
+                <Trophy className="mr-1.5 h-4 w-4" />
+                <span className="hidden sm:inline">My</span> Progress
+              </Button>
+            )}
             <Button variant="ghost" size="sm" onClick={() => setView("dashboard")} className="text-slate-600">
               <BarChart3 className="mr-1.5 h-4 w-4" />
               <span className="hidden sm:inline">Instructor</span> Dashboard
