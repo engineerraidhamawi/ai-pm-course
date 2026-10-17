@@ -1173,3 +1173,25 @@ export const FINAL_TAKEAWAYS = [
   "Maintain consistency across all project communications.",
   "Focus on high-value activities — strategy, relationships, problem-solving.",
 ];
+
+export function getModuleReadingTime(module: Module): number {
+  let wordCount = 0;
+  
+  for (const block of module.content) {
+    if (block.type === "paragraph") {
+      wordCount += block.text.split(/\s+/).length;
+    } else if (block.type === "heading") {
+      wordCount += block.text.split(/\s+/).length;
+    } else if (block.type === "list") {
+      wordCount += block.items.join(" ").split(/\s+/).length;
+    } else if (block.type === "prompt") {
+      wordCount += block.code.split(/\s+/).length;
+    } else if (block.type === "table") {
+      wordCount += block.headers.join(" ").split(/\s+/).length;
+      wordCount += block.rows.flat().join(" ").split(/\s+/).length;
+    }
+  }
+  
+  const minutes = Math.ceil(wordCount / 200);
+  return Math.max(2, minutes);
+}
